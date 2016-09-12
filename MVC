@@ -1,0 +1,652 @@
+
+ [components]
+
+Db.php...............
+
+<?php 
+
+/**
+* 
+*/
+	class Db
+	{
+	
+		public static function getConnection()
+		{
+			$paramsPath = ROOT.'/config/db_params.php';
+			$params = include($paramsPath);
+
+			$dsn = "mysql:host={$params['host']};dbname={$params['dbname']}";
+			$db = new PDO($dsn ,$params['user'],$params['password']);
+
+			return $db;
+		}
+	}
+
+Router.php ..........................
+
+<?php
+
+/**
+* 
+*/
+class Router	
+{
+	private $routes;  // массив в котором хранятся маршруты (папка config (файлы с настройками системы))
+
+	public function __construct()
+	{
+		$routesPath = ROOT.'/config/routes.php';
+		$this ->routes = include($routesPath);   // return array  в routes.php
+	}
+	
+	 /**
+	  * Return request string
+	  * @return string(type)
+	  */
+	  
+	  
+	private function getURI()    // инкапсуляция
+	{
+		if(!empty($_SERVER['REQUEST_URI'])){     //empty — Проверяет, пуста ли переменная
+			return trim($_SERVER['REQUEST_URI'], '/'); //trim — Удаляет пробелы (или другие символы) из начала и конца строки
+		}
+/*'REQUEST_URI'
+ URI, который был передан для того, чтобы получить доступ к этой странице. Например, '/index.html'. */
+	}
+	public function run()  // принимат управление от front controller
+	{     //0 Тест
+		 // print_r($this->routes); // выводит информацию о переменной в удобочитаемом виде.
+		 // echo "Class Router, method run";
+		 
+//1 Получить строку запроса
+		$uri = $this->getURI();
+	      // echo '$uri: '.$uri.'<br>';        //  http://localhost/mvc/                       mvc
+	      
+//2 Проверить наличие такого запроса в routes.php
+		foreach ($this->routes as $uriPattern => $path) {  //  Foreach работает только с массивами и объектами, и будет генерировать ошибку при попытке использования с переменными других типов или неинициализированными переменными.
+			 //echo "<br> $uriPattern -> $path" ;  //$uriPattern-строка запроса,$path-путь обработчика
+			// Сравниваем $uriPattern и $uri  (строка запроса и данные в роутах)
+			if(preg_match("~$uriPattern~",$uri)){
+				 // echo '$path: '.$path.'<br>';
+				 
+				 // echo '<br>Где ищем (запрос,который набрал пользователь): '.$uri;
+				 // echo '<br>Что ищем (совпадение из правила): '.$uriPattern;
+				 // echo '<br>Кто обрабатывает: '.$path;
+				 
+				 // Получаем внутренний путь из внешнего согласно правилу
+				$internalRoute = preg_replace("~$uriPattern~",$path,$uri);
+				 // echo '<br><br>Нужно сформировать($internalRoute): '.$internalRoute.'<br><br>';
+
+/*
+Пример:
+
+Где ищем (запрос,который набрал пользователь): news/sport/114
+Что ищем (совпадение из правила): news/([a-z]+)/([0-9]+)
+Кто обрабатывает: news/view/$1/$2
+
+Нужно сформировать: news/view/sport/114
+
+ */
+//3 Если есть совпадение, Определить какой контроллер и action обрабатавают запрос, параметры
+				$segments = explode('/', /*$path*/$internalRoute);//explode — Разбивает строку с помощью разделителя
+				array_shift($segments); // удалить mvc
+				// echo '<pre>';
+				// print_r($segments);
+				// echo '</pre>';
+			
+
+				$controllerName = array_shift($segments).'Controller';//array_shift() извлекает первое значение массива array и возвращает его, сокращая размер array на один элемент.
+				//echo $controllerName;
+				$controllerName = ucfirst($controllerName);//ucfirst — Преобразует первый символ строки в верхний регистр
+				 // echo $controllerName;
+				$actionName = 'action'.ucfirst(array_shift($segments));
+
+				 	// echo '<br>Класс(controller name): '.$controllerName ;
+      //               echo '<br>Метод(action name): '.$actionName ;
+      //Параметры
+                    $parameters = $segments;
+
+				// echo '<pre>';
+				// print_r($parameters);
+				// echo '</pre>';
+
+               //4 Подключить файл класса-контроллера
+
+				$controllerFile = ROOT.'/controllers/'. $controllerName.'.php';
+				if(file_exists($controllerFile)){ // file_exists — Проверяет наличие указанного файла или каталога
+					include_once ($controllerFile);  // Выражение include_once включает и выполняет указанный файл во время выполнения скрипта. 
+
+				}
+               //5 Создать объект, вызвать метод(т.е. action)
+
+				$controllerObject = new $controllerName;
+				//1..   $result = $controllerObject -> $actionName();
+				//2..   $result = $controllerObject -> $actionName($parameters); // передаем массив как параметр
+
+				$result = call_user_func_array(array($controllerObject,$actionName),$parameters); // $parameters- массив с параметрами
+				/*
+				
+				 http://php.net/manual/ru/language.types.callable.php
+
+		call_user_func_array — Вызывает пользовательскую функцию с массивом параметров
+		mixed call_user_func_array ( callable $callback , array $param_arr )
+callback
+Вызываемая функция типа callable.
+
+param_arr
+Передаваемые в функцию параметры в виде индексированного массива.
+
+
+				*/
+				if($result != null){  // обрываем цикл ,который ищет совпадения в маршрутах
+					break;
+				}
+			}
+
+		}
+
+		
+
+
+
+	}
+
+
+////..Yii, Symfony .  .  . .............................................................
+
+}
+
+/*
+Передача параметров при использовании ЧПУ
+
+не ЧПУ
+http://mvc/news/?id=1235&category=sport   ->  на сервере попадали в суперглоб.массив $_GET
+
+$_GET['id']          
+$_GET['category']
+
+ЧПУ
+http://mvc/news/sport/1235      // не попадают в массмв $_GET , но решение есть
+
+ */
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+ [config]
+
+db_params.php................................................
+
+<?php 
+return array(
+		'host' => 'localhost',
+		'dbname' =>'mvc_site',
+		'user' => 'bloguser',
+		'password' => '123'
+		);
+
+routes.php...................................................
+
+<?php
+
+return array(            // возвращаем массив
+//1.
+	//  'news/77' => 'news/view',  // адрес для просмотра одной новости
+	// 'news/15' => 'news/view', // Располагаем выше
+//2. 
+		// 'news/([0-9]+)' => 'news/view', //  в строке любое число(от 1го символа и больше)
+//3.		
+		
+  'news/([a-z]+)/([0-9]+)' => 'news/view/$1/$2', 
+'news/([0-9]+)' => 'news/view/$1',
+  // получим параметры $1/$2 и передадим методу класса action -> выполним в class Router 
+ //Пример:  news/sport/114   -  варезать  sport/114  и подставить на места  $1/$2
+'news' => 'news/index', // actionIndex в NewsController  (пара в массиве -    
+	//'news'- запрос(в адресной строке))
+// 'news/index' - строка где обрабатывается запрос  
+	'products' => 'product/list' ,// actionList в ProductController
+'news/archive' => 'news/archive'
+	);
+
+/*
+Передача параметров при использовании ЧПУ
+
+не ЧПУ
+http://mvc/news/?id=1235&category=sport   ->  на сервере попадали в суперглоб.массив $_GET
+
+$_GET['id']          
+$_GET['category']
+
+ЧПУ
+http://mvc/news/sport/1235      // не попадают в массмв $_GET , но решение есть
+Пример: (см.выше)
+'news/([a-z]+)/([0-9]+)' => 'news/view/$1/$2'  // ([a-z]+) - category ,([0-9]+) - id
+ */
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+[controllers]
+
+NewsController.php...........................................
+
+<?php
+
+include_once (ROOT.'/models/News.php');
+
+class NewsController
+{
+	
+	public function actionIndex()
+	{
+		// echo "NewsController actionIndex";
+		//echo 'Список новостей';
+		$newsList = array();
+		$newsList = News::getNewsList();
+
+       require_once(ROOT.'/views/news/index.php'); // html code соответствует представлению для данного action
+
+		// echo '<pre>';
+		// print_r($newsList);
+		// echo '</pre>';
+
+
+		return true;  // передаем значение в $result (Router.php) чтобы выйти из цикла
+	}
+
+
+	public function actionView($id)
+	{
+		if($id){
+			$newsItem = News::getNewsItemById($id);
+
+			// echo '<pre>';
+			// print_r($newsItem);
+			// echo '</pre>';
+
+			// echo'actionView';
+		}
+		
+
+		return true;
+	}
+
+/*
+		public function actionView($params)
+	{
+	
+		// echo 'Просмотр одной новости';
+		echo'<br>'.$params[0];
+		echo'<br>'.$params[1];
+		return true;
+	}
+
+	
+
+		public function actionView($category, $id)
+	{
+
+		echo'<br>'.$category;
+		echo'<br>'.$id;
+		return true;
+	}
+*/
+
+}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+[models]
+
+ News.php........................................................................
+
+
+<?php 
+ 
+class News
+{
+
+/**
+ * Returns single news item with specified id  // одна новость
+ * @param integer $id
+ * 
+ */
+
+public static function getNewsItemById($id)
+{
+// Запрос к БД
+ $id = intval($id);
+	if($id){
+
+		// $host = 'localhost';
+		// $dbname = 'mvc_site';
+		// $user = 'bloguser';
+		// $password = '123';
+		// $db = new PDO("mysql:host=$host;dbname=$dbname",$user,$password);
+
+		 $db = Db::getConnection();
+
+		$result = $db->query('SELECT * FROM news WHERE id=' .$id);
+
+         // $result->setFetchMode(PDO::FETCH_NUM);
+        $result->setFetchMode(PDO::FETCH_ASSOC);
+
+		$newsItem = $result->fetch(); 
+
+		return $newsItem;
+	}
+}
+
+/**
+ * Returns an array of news item   // список новостей
+ */
+
+public static function getNewsList()
+{
+// Запрос к БД
+
+	// $host = 'localhost';
+	// $dbname = 'mvc_site';
+	// $user = 'bloguser';
+	// $password = '123';
+	// $db = new PDO("mysql:host=$host;dbname=$dbname",$user,$password);
+     $db = Db::getConnection();
+	$newsList = array();
+
+	$result = $db->query('SELECT id,title,date,short_content '
+		.'FROM news '
+		.'ORDER BY date DESC '
+		.'LIMIT 10');
+
+	$i = 0;
+	while($row = $result->fetch()) {
+		$newsList[$i]['id'] = $row['id'];
+		$newsList[$i]['title'] = $row['title'];
+		$newsList[$i]['date'] = $row['date'];
+		$newsList[$i]['short_content'] = $row['short_content'];
+
+		$i++;
+
+	}
+	return $newsList;
+
+}
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+[view]
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+// Front controller
+index.php................................
+
+<?php
+////...................................................
+
+/*
+echo 'Front Controller ....'.date('l jS \of F Y h:i:s A').'<br>';
+echo 'your request:'.$_SERVER['REQUEST_URI'];
+echo "<br>...................<br>";
+*/
+// ////.....................регулярные выражения..............
+/*
+// Format: dd-mm-yyyy
+$string = '21-11-2015'; // день-месяц-год
+// Год 2015, месяц 11, день 21
+$pattern = '/([0-9]{2})-([0-9]{2})-([0-9]{4})/';
+$replacement = 'Год $3,месяц $2,день $1'; // $1 - первая подмаска([0-9]{2}) ,2я - ([0-9]{2}), 3я - ([0-9]{4})
+echo preg_replace($pattern, $replacement, $string );
+*/
+/*
+ preg_replace — Выполняет поиск и замену по регулярному выражению.
+ Выполняет поиск совпадений в строке string с шаблоном pattern и заменяет их на replacement
+*/
+ /*
+echo "<br>";
+// Month: 11, Day: 21, Year: 2015
+$replacement1 = 'Month: $2, Day: $1, Year: $3';
+echo preg_replace($pattern, $replacement1, $string );
+echo "<br>...................<br>";
+*/
+////////////////////////////////////////////////////////
+/*
+$string = 'Ученик сидит за партой';
+
+$pattern = '/Ученик/';
+$result = preg_match($pattern,$string); // 1 если найдено и 0 если нет,false в случае ошибки
+var_dump($result);  // int(1)
+echo "<br>...................<br>";
+////////////////////////////////////////////////////////
+///
+
+$string = 'Ученик закончил школу в 2000 году.Стал студентом в 2002.';
+
+// $pattern = '/2000/';
+// $pattern = '/200[0-5]/'; // [] задает диапазон поиска для одного символа
+//$pattern = '/200[1,5,8]/'; // [] задает диапазон поиска для 1го символа (или 1,или 5, или 8)
+// 2001  2005  2008 
+// 
+// Поиск от 0000 - 9999
+ // $pattern = '/[0-9][0-9][0-9][0-9]/'; 
+ 
+//квантификаторы - помогаут описать повторяющиеся символы в строке
+$string = 'Apples and oranges ppp';
+
+$pattern = '/p{2}/';// '/p/'  '/pp/'   {2} - квантификатор,указ.что мы ищем на 2 или (группа)
+// символов которые находятся перед ним (в данном сл. 'p' ) 
+// p{3,5} от 3 до 5 симв. подряд
+// p{1,} от 1 и более
+$string = 'Apples and oranges ppp 222';
+
+$pattern = '/[0-9]{1,2}/';// ищет цифры сост. из от 1 до 2 знаков
+// [0-9]+   ищем любое кол-во цифр больше одной    98797239893
+// 
+$result = preg_match($pattern,$string); // 1 если найдено и 0 если нет,false в случае ошибки
+var_dump($result);  // int(1)
+echo "<br>...................<br>";
+*/
+
+///// http://php.net/manual/ru/regexp.reference.repetition.php ///////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+
+// FRONT CONTROLLER  // все запросы попадают в этот файл (см.  .htaccess)
+
+// 1. Общие настройки
+
+ini_set('display_errors',1);
+error_reporting(E_ALL);   // отображение ошибок на время разработки сайта ,потом выкл.
+
+// 2. Подключение файлов системы
+define('ROOT', dirname(__FILE__));  //  dirname(__FILE__) - полный путь к файлу на диске
+                                 // при помощи ф-ции dirname() и псевдоконстанты __FILE__
+     // echo ROOT."<br>";  //  /var/www/html/mvc
+require_once(ROOT.'/components/Router.php');
+require_once(ROOT.'/components/Db.php');
+
+
+// 3. Установка соединения с БД
+
+
+
+// 4. Вызов Router
+
+$router = new Router();
+$router -> run();
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+.htaccess...........................
+
+AddDefaultCharset utf-8
+
+RewriteEngine on
+RewriteBase /mvc/
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+RewriteRule ^(.*)$ index.php
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+/////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+_______________  mvc  _________________________________
+
+Папка (root)'templates' :
+
+.................файл 'layout.php'
+
+
+<!DOCTYPE html>
+<html>
+
+ <head>
+  <title><?php echo $title ?></title>
+ </head>
+
+	<body>
+	  <?php echo $content ?>
+	</body>
+
+</html>
+
+................................файл 'list.php'
+<!--
+<!DOCTYPE html>
+<html>
+ <head>
+   <title>List of Posts</title>
+ </head>
+	 <body>
+		<h1>List of Posts</h1>
+		<ul>
+			<?php foreach ($posts as $post): ?>
+			<li>
+			<a href="/read?id=<?php echo $post['id'] ?>">
+			<?php echo $post['title'] ?>
+			</a>
+			</li>
+			<?php endforeach ?>
+		</ul>
+
+	 </body>
+</html>
+-->
+
+ <?php $title = 'List of Posts' ?>
+
+<?php ob_start() ?>               <!--// ob_start — Включение буферизации вывода -->
+  <h1>List of Posts..........</h1>
+  <ul>
+	<?php foreach ($posts as $post): ?>
+	<li>
+	  <a href="/read?id=<?php echo $post['id'] ?>">
+		<?php echo $post['title'] ?>
+	  </a>
+	</li>
+	<?php endforeach ?>
+  </ul>
+<?php $content = ob_get_clean() ?>         <!--// ob_get_clean — Получить содержимое текущего буфера и удалить его -->
+
+<?php include 'layout.php' ?>
+................................файл 'show.php'
+
+
+ <?php $title = $post['title'] ?>
+
+ <?php ob_start() ?>
+	<h1><?php echo $post['title'] ?></h1>
+	<div class="date"><?php echo $post['meta_d'] ?></div>
+	<div class="body">
+	  <?php echo $post['text'] ?>
+	</div>
+ <?php $content = ob_get_clean() ?>
+
+ <?php include 'layout.php' ?>
+
+..................................
+
+root:
+
+..............................файл 'index.php'
+
+<?php
+//controller
+	require_once 'model.php';
+
+	$posts = get_all_posts();
+
+	require 'templates/list.php';
+
+..............................файл 'model.php'
+<?php
+
+	function open_database_connection()
+	{
+		$link = new PDO("mysql:host=localhost;dbname=phpblog;charset=utf8", 'bloguser', '123');
+		      return $link;
+	}
+
+	function close_database_connection($link)
+	{
+		$link = null;
+	}
+
+	function get_all_posts()
+	{
+		$link = open_database_connection();
+		$result = $link->query('SELECT id,title FROM categories');
+		$posts = array();
+
+			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+				 $posts[] = $row;
+			}
+
+		close_database_connection($link);
+	
+		return $posts;
+	}
+
+	function get_post_by_id($id)
+	{
+		$link = open_database_connection();
+		$id = intval($id);
+		$result = $link->query('SELECT title,meta_d,text FROM categories WHERE id = '.$id);
+		$row = $result->fetch(PDO::FETCH_ASSOC);
+
+		close_database_connection($link);
+
+		return $row;
+	}
+..............................файл 'show.php'
+
+<?php
+//controller
+ require_once 'model.php';
+
+ $post = get_post_by_id($_GET['id']);
+
+ require 'templates/show.php';
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
