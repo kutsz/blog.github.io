@@ -573,6 +573,215 @@ switch (expression) {
       [break;]
 }
 ..................
+ИНСТРУКЦИИ ОБРАБОТКИ ИСКЛЮЧЕНИЙ
+
+Инструкция throw используется, чтобы выбросить исключение, а инструкция try...catch, чтобы его обработать.
+
+Типы исключений
+
+Практически любой объект может быть выброшен как исключение. Тем не менее, не все выброшенные объекты создаются равными. Обычно числа или строки выбрасываются как исключения, но часто более эффективным является использование одного из типов исключений, специально созданных для этой цели:
+
+Исключения ECMAScript
+DOMException и DOMError
+
+ИНСТРУКЦИЯ throw
+
+Используйте инструкцию throw, чтобы выбросить исключение. При выбросе исключения нужно указать выражение, содержащее значение, которое будет выброшено:
+
+throw expression;
+Вы можете выбросить любое выражение, а не только выражения определенного типа. В следующем примере выбрасываются исключения различных типов:
+
+throw "Error2";                                              // string
+throw 42;                                                    // number
+throw true;                                                  // boolean
+throw { toString: function() { return "I'm an object!"; } }; // object
+Примечание: Вы можете выбросить объект как исключение. Вы можете обращаться к свойствам данного объекта в блоке catch.
+В следующем примере объект UserException выбрасывается как исключение:
+
+function UserException (message) {
+  this.message = message;
+  this.name = "UserException";
+}
+
+UserException.prototype.toString = function () {
+  return this.name + ': "' + this.message + '"';
+}
+
+throw new UserException("Value too high");
+
+
+ИНСТРУКЦИЯ try...catch
+
+Инструкция try...catch состоит из блока try, который содержит одну или несколько инструкций, и нуля или более блоков catch, которые содержат инструкции, определяющие порядок действий при выбросе исключения в блоке try. Иными словами, если в блоке try будет выброшено исключение, то управление будет передано в блок catch. Если в блоке try не возникнет исключений, то блок catch будет пропущен. Блок finally будет выполнен после окончания работы блоков try и catch, вне зависимости от того, было ли выброшено исключение.
+
+В следующем примере вызывается функция getMonthName, которая возвращает название месяца по его номеру. Если месяца с указанным номером не существует, то функция выбросит исключение "InvalidMonthNo", которое будет перехвачено в блоке catch:
+
+function getMonthName (mo) {
+  mo = mo - 1;
+  var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  if (months[mo] != undefined) {
+    return months[mo];
+  } else {
+    throw "InvalidMonthNo";
+  }
+}
+
+try {
+  monthName = getMonthName(myMonth);
+} catch (e) {
+  monthName = "unknown";
+}
+Блок catch
+
+Используйте блок catch, чтобы обработать исключения, сгенерированные в блоке try.
+
+catch (catchID) { statements }
+JavaScript создает идентификатор catchID, которому присваивается перехваченное исключение, при входе в блок catch; данный идентификатор доступен только в пределах блока catch и уничтожается при выходе из него.
+
+В следующем примере выбрасывается исключение, которое перехватывается в блоке catch:
+
+try {
+  throw "myException"
+} catch (e) {
+  console.error(e);
+}
+Блок finally
+
+Блок finally содержит код, который будет выполнен после окончания работы блоков try и catch, но до того, как будет выполнен код, который следует за инструкцией try...catch. Блок finally выполняется вне зависимости от того, было ли выброшено исключение. Блок finally выполняется даже в том случае, если исключение не перехватывается в блоке catch.
+
+В следующем примере открывается файл, затем в блоке try происходит вызов функции writeMyFile, который может выбросить исключение. Если возникает исключение, то оно обрабатывается в блоке catch. В любом случае файл будет закрыт функцией closeMyFile, вызов которой находится в блоке finally.
+
+openMyFile();
+try {
+  writeMyFile(theData);
+} catch(e) {
+  handleError(e);
+} finally {
+  closeMyFile();
+}
+Если блок finally возвращает значение, то данное значение становится возвращаемым значением всей связки try-catch-finally. Значения, возвращаемые блоками try и catch, будут проигнорированы.
+
+function f() {
+  try {
+    console.log(0);
+    throw "bogus";
+  } catch(e) {
+    console.log(1);
+    return true;    // приостанавливается до завершения блока `finally`
+    console.log(2); // не выполняется
+  } finally {
+    console.log(3);
+    return false;   // заменяет предыдущий `return`
+    console.log(4); // не выполняется
+  }
+  // `return false` выполняется сейчас
+  console.log(5);  // не выполняется
+}
+f();               // отображает 0, 1, 3 и возвращает `false`
+Замена возвращаемых значений блоком finally распространяется в том числе и на исключения, которые выбрасываются или перевыбрасываются в блоке catch:
+
+function f() {
+  try {
+    throw "bogus";
+  } catch(e) {
+    console.log('caught inner "bogus"');
+    throw e;      // приостанавливается до завершения блока `finally`
+  } finally {
+    return false; // заменяет предыдущий `throw`
+  }
+  // `return false` выполняется сейчас
+}
+
+try {
+  f();
+} catch(e) {
+  // Не выполняется, т.к. `throw` в `catch `заменяется на `return` в `finally`
+  console.log('caught outer "bogus"');
+}
+
+// В результате отображается сообщение caught inner "bogus"
+// и возвращается значение `false`
+Вложенные инструкции try...catch
+
+Вы можете вкладывать инструкции try...catch друг в друга. Если внутренняя инструкция try...catch не имеет блока catch, то исключение будет перехвачено во внешнем блоке catch.
+
+Использование объекта Error
+
+В зависимости от типа ошибки вы можете использовать свойства name и message, чтобы получить более подробную информацию. Свойство name содержит название ошибки (например, DOMException или Error), свойство message — описание ошибки.
+
+Если вы выбрасываете собственные исключения, то чтобы получить преимущество, которое предоставляют эти свойства (например, если ваш блок catch не делает различий между вашими исключениями и системными), используйте конструктор Error. Например:
+
+function doSomethingErrorProne () {
+  if ( ourCodeMakesAMistake() ) {
+    throw ( new Error('The message') );
+  } else {
+    doSomethingToGetAJavascriptError();
+  }
+}
+
+try {
+  doSomethingErrorProne();
+} catch (e) {
+  console.log(e.name);    // 'Error'
+  console.log(e.message); // 'The message' или JavaScript error message
+}
+.............................
+Объект PromiseEDIT
+Начиная с ECMAScript 6, JavaScript поддерживает объект Promise, который используется для отложенных и асинхронных операций.
+
+Объект Promise может находиться в следующих состояниях:
+
+ожидание (pending): начальное состояние, не выполнено и не отклонено.
+выполнено (fulfilled): операция завершена успешно.
+отклонено (rejected): операция завершена с ошибкой.
+заданный (settled): обещание выполнено или отклонено, но не находится в состоянии ожидания.
+
+.........................
+Загрузка изображения при помощи XHR
+
+Простой пример использования объектов Promise и XMLHttpRequest для загрузки изображения доступен в репозитории MDN promise-test на GitHub. Вы также можете посмотреть его в действии. Каждый шаг прокомментирован, что позволяет вам разобраться в архитектуре Promise и XHR. Здесь приводится версия без комментариев:
+
+function imgLoad(url) {
+  return new Promise(function(resolve, reject) {
+    var request = new XMLHttpRequest();
+    request.open('GET', url);
+    request.responseType = 'blob';
+    request.onload = function() {
+      if (request.status === 200) {
+        resolve(request.response);
+      } else {
+        reject(Error('Image didn\'t load successfully; error code:' 
+                     + request.statusText));
+      }
+    };
+    request.onerror = function() {
+      reject(Error('There was a network error.'));
+    };
+    request.send();
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
