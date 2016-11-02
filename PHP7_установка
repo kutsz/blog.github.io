@@ -1,0 +1,516 @@
+Введение
+
+Версия PHP 7, выпущенная 3 декабря 2015 года, обещает значительное увеличение скорости работы по сравнению с предыдущими версиями этого языка, а также новые функции (например, подсказки скалярного типа). В этом руководстве объясняется, как быстро обновить PHP 5.x (любую версию), работающую на веб-сервере Apache или Nginx, до PHP 7
+
+Внимание: Как и в большинстве случаев с выпуском новой версии языка, лучше немного подождать, прежде чем обновляться до PHP 7 в продакшене. За это время можно протестировать свои приложения на совместимость с новой версией, выполнить тесты производительности и ознакомиться с новыми функциями языка.
+
+Если у вас есть другие сервисы или приложения с активными пользователями, то лучше сначала провести тестирование.
+
+Необходимые условия
+
+Для целей этого руководства предполагается, что вы используете PHP 5.x на Ubuntu 14.04, используя либо mod_php вместе с Apache, либо PHP-FPM вместе с Nginx. Также предполагается, что для выполнения административных задач у вас имеется конфигурированный пользователь non-root с привилегиями sudo.
+
+ДОБАВЛЕНИЕ ХРАНИЛИЩА PPA ДЛЯ ПАКЕТОВ PHP 7.0
+
+Архив персональных пакетов, или PPA, это apt-хранилище, расположенное на Launchpad. PPA позволяет сторонним разработчикам создавать и распространять пакеты для Ubuntu за пределами официальных каналов. Нередко такие хранилища выступают в качестве полезных источников бета-программ, измененных версий, и бэкпортов для более ранних версий операционной системы.
+
+Ондрей Суры (Ondrej Sury) поддерживает пакеты PHP для Debian и предлагает хранилище PPA для PHP 7.0 на Ubuntu. Для начала вам необходимо войти в свою систему и добавить это хранилище PPA в apt-источники вашей системы:
+
+		sudo add-apt-repository ppa:ondrej/php
+
+Вы увидите описание хранилища PPA, а затем на экране появится запрос на продолжение. Нажмите Enter, чтобы продолжить.
+
+Примечание: Если локаль вашей системы не настроена на UTF-8, добавление хранилища PPA может завершиться неудачей из-за символов в имени автора. Как вариант вы можете установить language-pack-en-base чтобы убедиться, что локали сгенерированы, и переписать общесистемные настройки локали, добавляя хранилище PPA:
+
+		sudo apt-get install -y language-pack-en-base
+		sudo LC_ALL=en_US.UTF-8 add-apt-repository ppa:ondrej/php
+
+После установки хранилища PPA обновите кэш локального пакета:
+
+		sudo apt-get update
+
+Теперь, когда у нас есть доступ к пакетам для PHP 7.0, мы можем заменить существующую версию PHP.
+
+ОБНОВЛЕНИЕ MOD_PHP ДЛЯ СИСТЕМЫ С APACHE
+
+В этом разделе описан процесс обновления для системы, использующей Apache в качестве веб-сервера и mod_php для выполнения PHP-кода. Если же вы используете Nginx и PHP-FPM, сразу переходите к следующему разделу.
+
+Сначала установите новые пакеты. Так вы обновите все важные пакеты PHP, за исключением php5-mysql, который будет удален.
+
+		sudo apt-get install php7.0
+____________________________________________________________________________________________________________________________
+ПРИМЕЧАНИЕ: Если вы внесли существенные изменения в любые файлы конфигурации в /etc/php5/, эти файлы по-прежнему на месте, и на них можно ссылаться. Файлы конфигурации для PHP 7.0 теперь находятся в /etc/php/7.0.
+__________________________________________________________________________________________________________________________
+
+Если вы используете MySQL, повторно добавьте PHP MySQL:
+
+		sudo apt-get install php7.0-mysql
+
+ОБНОВЛЕНИЕ PHP-FPM ДЛЯ СИСТЕМЫ С NGINX............................
+
+В этом разделе описывается процесс обновления для системы, использующей Nginx в качестве веб-сервера и PHP-FPM для выполнения PHP-кода.
+
+Сначала установите новый пакет PHP-FPM и его зависимости:
+
+sudo apt-get install php7.0-fpm
+На экране появится запрос на продолжение. Нажмите Enter, чтобы завершить установку. Если вы используете MySQL, повторно установите PHP MySQL:
+
+sudo apt-get install php7.0-mysql
+Примечание: Если вы внесли значительные изменения к любые файлы конфигурации в /etc/php5/, эти файлы по-прежнему на месте, и на них можно ссылаться. Файлы конфигурации для PHP 7.0 теперь находятся в /etc/php/7.0.
+
+Обновление сайта (сайтов) Nginx с целью использования новых путей к сокетам
+
+Nginx взаимодействует с PHP-FPM при помощи доменного Unix-сокета. Сокеты прокладывают путь в файловой системе, и наш PHP 7 по умолчанию использует новый путь:
+
+PHP 5	PHP 7
+/var/run/php5-fpm.sock	/var/run/php/php7.0-fpm.sock
+Откройте файл конфигурации сайта default при помощи nano (или другого редактора):
+
+sudo nano /etc/nginx/sites-enabled/default
+Ваша конфигурация может немного отличаться. Найдите блок, начинающийся с location ~ \.php$ {, и строку, выглядящую примерно так: fastcgi_pass unix:/var/run/php5-fpm.sock;. Измените на следующее: unix:/var/run/php/php7.0-fpm.sock.
+
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server ipv6only=on;
+
+    root /var/www/html;
+    index index.php index.html index.htm;
+
+    server_name server_domain_name_or_IP;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    error_page 404 /404.html;
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/html;
+    }
+
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}
+Выйдите и сохраните файл. В nano вы можете использовать Ctrl-X для выхода, y для подтверждения, и Enter для подтверждения перезаписываемого имени файла.
+
+Повторите этот процесс для других виртуальных сайтов, заданных в /etc/nginx/sites-enabled, которые должны поддерживать PHP.
+
+Теперь мы можем перезапустить nginx:
+
+sudo service nginx restart
+Тестирование PHP
+
+Теперь, когда веб-сервер конфигурирован и новые пакеты установлены, мы должны убедиться, что PHP работает. Начните с проверки установленной версии PHP в командной строке:
+
+php -v
+
+Output
+PHP 7.0.0-5+deb.sury.org~trusty+1 (cli) ( NTS )
+Copyright (c) 1997-2015 The PHP Group
+Zend Engine v3.0.0, Copyright (c) 1998-2015 Zend Technologies
+    with Zend OPcache v7.0.6-dev, Copyright (c) 1999-2015, by Zend Technologies
+Вы также можете создать тестовый файл в корне документа веб-сервера. В зависимости от вашего сервера и конфигурации, корень документа может находиться по одному их этих адресов:
+
+/var/www/html
+/var/www/
+/usr/share/nginx/html
+При помощи nano откройте новый файл под именем info.php в корне документа. По умолчанию, на Apache это будет выглядеть следующим образом:
+
+sudo nano /var/www/html/info.php
+На Nginx можно использовать следующее:
+
+sudo nano /usr/share/nginx/html/info.php
+Вставьте следующий код:
+
+<?php
+phpinfo();
+?>
+Выйдите из редактора, сохранив info.php. Теперь введите в своем браузере следующий адрес:
+
+http://server_domain_name_or_IP/info.php
+Вы увидите версию PHP и конфигурационную информацию для PHP 7. Проверив этот момент, лучше удалить info.php:
+
+sudo rm /var/www/html/info.php
+Заключение
+
+Теперь вы убедились, что PHP 7 работает. Далее вы можете ознакомиться с постом Эрики Хайди Подготовка к PHP 7, а также с официальным руководством по переходу от более ранних версий PHP к более поздним.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+PHP 7 ON LINUX MINT AND UBUNTU
+
+Submitted by peter on Tue, 01/26/2016 - 17:54
+PHP 7 has arrived but may not be on your favourite operating system. Here is a way to put PHP 7 on Linux Mint and Ubuntu.
+
+	PPAS AND SOFTWARE SOURCES
+Linux and some other operating system let you specify sources for software updates. Linux can use a PPA which is a link to a software source. This page mentions a PPA. Hundreds, perhaps thousands, of people use the PPA mentioned here. One person sent me a crude email saying they had a problem with their software sources after using the PPA but did not describe the problem in any useful detail. They also mistakenly said they thought I had something to do with the PPA. No, it is not my PPA and the software sources behind the PPA are nothing to do with me.
+
+I will not quote the email because of the language. I marked the email as junk because of the language.
+
+A PPA is just a shortcut to a software source. Almost every PPA page tells you the software sources and you can use the software sources direct without the PPA. PPAs are created by volunteers. If the PPA is out of data, contact the Web site hosting the PPA, not the Web sites mentioning the PPA.
+
+Visit launchpad.net/~ondrej/+archive/ubuntu/php before you decide to use the PPA. Check the software sources behind the PPA. Post your questions on Launchpad or as described in the PPA page.
+
+Before any software update, backup everything.
+
+	UPDATE TO PHP VERSION 5.6 FIRST
+PHP 5 is currently at PHP 5.6. PHP 7 is compatible with PHP 5.6 and PHP 5.5. If you are on a version of PHP older than PHP 5.5, update to PHP 5.6 first. Adjust any code that is not compatible with PHP 5.6.
+
+After everything is tested with PHP 5.6, upgrade to PHP 7. Test everything with PHP 7. The PHP 5.6 code should work in PHP 7.
+
+	YOU CAN LEAVE PHP 5.6 IN PLACE
+After converting everything to PHP 7, you can delete the older versions of PHP then start upgrading code to use the improved features of PHP 7. You do not have to delete PHP 5.6 immediately. PHP 5.6 is in a different directory. You can switch back at any time by changing some configuration links.
+
+	YOUR CODE WILL RUN FASTER WITH OR WITHOUT CHANGES
+PHP 7 will run all code faster than PHP 5. Some code will be twice as fast. You can get further speed improvements by altering the code to use type hints, one of the big new code improvement in PHP 7.
+
+Type hints tell the PHP compiler how to handle data without generating all the type detection overhead needed for PHP 5. You use type hints on the most commonly used variables to improve performance. Eventually you might rewrite all your code to use type hints.
+
+	PHP 7 IS EASIER TO LEARN IF YOU KNOW JAVASCRIPT
+PHP 7 lets you use a simpler way of defining arrays. The PHP 7 array syntax is optional and one day will be required. The new syntax is already used by a few languages including Javascript. You will find it easier to switch between PHP 7 and Javascript when you use the PHP 7 array syntax.
+
+	HOW DO YOU FIND THE CURRENT PHP VERSION?
+PHP can run in a Web server or as a command line program. The two configurations are separate which means you could run two different versions without knowing you are running two versions.
+
+You can display the PHP version used by the Web server by placing <?php phpinfo(); ?> in any Web page.
+
+You can display the command line version by typing php -v in the Linux/Unix DOS/command box.
+
+In one of your test Web sites, create a Web page named phpinfo.php containing <?php phpinfo(); ?>. Open the Web site and select the page. At the top pf the page, you will see something like the following line.
+
+PHP Version 5.6.17-3+deb.sury.org~trusty+1
+Open the Linux/Unix DOS/command box. Select Menu → Terminal. In the Terminal box, type php -v and press enter. The following text is displayed by php -v after the PHP 7 upgrade.
+
+PHP 7.0.2-4+deb.sury.org~trusty+1 (cli) ( NTS )
+Copyright (c) 1997-2015 The PHP Group
+Zend Engine v3.0.0, Copyright (c) 1998-2015 Zend Technologies
+    with Zend OPcache v7.0.6-dev, Copyright (c) 1999-2015, by Zend Technologies
+
+	HOW DO YOU FIND THE PHP CONFIGURATION?
+This procedure assumes you use Apache. If you use any other Web server, there will be an equivalent for that Web server.
+
+Open the file manager. Menu → Files. In Linux Mint, the file manager program is named Nemo. Ubuntu uses Nautilus.
+
+Select File System then directory etc then directory apache2 then directory mods-enabled then file php5.load. The file contain the following line.
+
+LoadModule php5_module /usr/lib/apache2/modules/libphp5.so
+In the same directory, open file php5.conf. The file contain the following lines. Some lines might be different if you have not upgraded to Apache 2.4.
+
+<FilesMatch ".+\.ph(p[345]?|t|tml)$">
+    SetHandler application/x-httpd-php
+</FilesMatch>
+<FilesMatch ".+\.phps$">
+    SetHandler application/x-httpd-php-source
+    # Deny access to raw php sources by default
+    # To re-enable it's recommended to enable access to the files
+    # only in specific virtual host or directory
+    Require all denied
+</FilesMatch>
+# Deny access to files without filename (e.g. '.php')
+<FilesMatch "^\.ph(p[345]?|t|tml|ps)$">
+    Require all denied
+</FilesMatch>
+
+# Running PHP scripts in user directories is disabled by default
+# 
+# To re-enable PHP in user directories comment the following lines
+# (from <IfModule ...> to </IfModule>.) Do NOT set it to On as it
+# prevents .htaccess files from disabling it.
+<IfModule mod_userdir.c>
+    <Directory /home/*/public_html>
+        php_admin_flag engine Off
+    </Directory>
+</IfModule>
+Select File System then directory etc then directory php5. Browse the files in the directory and sub directories. Note there is one child directory named apache2 and other named cli. The cli directory defines the PHP used in the Terminal/command line box. The apache2 directory defines the PHP used by your Apache Web server.
+
+HOW DO YOU ADD PHP 7 WHILE RETAINING PHP 5.6?
+We will use a PPA in this step. Visit launchpad.net/~ondrej/+archive/ubuntu/php and check the software sources behind the PPA. I have nothing to do with the PPA or the software sources.
+
+Start the Linux Mint Update Manager or equivalent.
+Menu → Administration → Update Manager
+
+In Update Manager, select Software sources.
+Edit → Software sources
+
+Enter your password if requested.
+
+In Software sources, select PPAs.
+
+In PPAs, select Add a new PPA.
+
+In the box displaying "Please enter the name of the PPA you want to add:", type ppa:ondrej/php then select OK.
+
+A button labelled Update the cache will appear in the top right corner of the Software sources screen. Select the Update the cache button.
+
+The cache update will take a few seconds or minutes depending on your connection. You should then see an update item for PHP or PHP 7 or PHP PEAR. Install the update.
+
+Close the Update Manager then check the PHP version using the phpinfo() function or the php -v command.
+
+For more details about the PPA, read https://launchpad.net/~ondrej/+archive/ubuntu/php.
+
+	PHP CLI IS 7.0 BUT NOT APACHE
+In the file manager, select File System then directory etc then directory php. Browse the files in the directory and sub directories. Notice there is one child directory named 7.0. The 7.0 directory defines the use of PHP 7. There is a directory named cli in directory 7.0. This makes PHP 7 the version you see in the Terminal/command line box.
+
+There is no apache2 directory. We need another step to make PHP 7 run in your Web server.
+
+Open the Synaptic Package Manager. Select Menu → Administration → Synaptic Package Manager. In the search box, type php7. The following list is displayed by the Synaptic Package Manager.
+Synaptic Package Manager list of PHP 7 packages showing php7.0-cli installed
+
+libapache2-mod-php7.0 is not installed. Select libapache2-mod-php7.0 then right click and select Mark for Installation.
+
+Select Apply in the Synaptic Package Manager menu.
+
+Remember the Apache configuration line containing LoadModule php5_module /usr/lib/apache2/modules/libphp5.so? We now have /usr/lib/apache2/modules/libphp7.0.so.
+
+Select File System then directory etc then directory apache2 then directory mods-available. You will find files named php5.conf, php5.load, php7.0.conf, and php7.0.load.
+
+We want links to the PHP 7 files in directory mods-enabled.
+
+Place links to php7.0.conf and php7.0.load in directory mods-enabled
+Delete php5.conf and php5.load from directory mods-enabled
+Restart Apache
+Open Terminal. Type in sudo nemo and press enter. Supply your password. sudo provides administrator access to the Nemo file manager.
+
+Select File System then directory etc then directory apache2 then directory mods-available.
+
+Select php7.0.conf. In the file manager menu, select Edit then Make Link. Ctrl+M is a shortcut to Make Link. The link is named Link to php7.0.conf.
+
+Repeat the Make Link step for php7.0.load.
+
+Cut Link to php7.0.conf and Link to php7.0.load then paste them into directory mods-enabled. Rename Link to php7.0.conf to php7.0.conf and Link to php7.0.load to php7.0.load.
+
+Delete files php5.conf and php5.load from directory mods-enabled.
+
+Restart Apache by typing sudo service apache2 restart into Terminal. Supply your password.
+
+Check PHP 7 is running in Apache by refreshing the Web page containing phpinfo().
+
+	IS EVERYTHING INSTALLED WITH PHP 7?
+PHP 7 contains a different set of add-on modules included depending on who compiled PHP. There are also extra add-on modules defined in the configuration files fount in etc/php5 and etc/php/7.0. You can see the available options in the phpinfo() display described earlier.
+
+The phpinfo() lists the following modules as included in the installation.
+bcmath, calendar, Core, ctype, date, dba, dom, exif, fileinfo, filter, ftp, gettext, hash, iconv, libxml, mbstring, mysqlnd, openssl, pcre, PDO, Phar, posix, readline, Reflection, session, SimpleXML, soap, sockets, SPL, standard, sysvmsg, sysvsem, sysvshm, tokenizer, xml, xmlreader, xmlwriter, Zend OPcache, zip, and zlib.
+
+	CONCLUSION
+The upgrade to PHP 7 is easy and effective when you are already on PHP 5.6. Upgrade to 5.6 first and test all your code before leaping into PHP 7.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+phpMyAdmin - Error | The mbstring extension is missing. Please check your PHP configuration.
+
+sudo apt-get install libapache2-mod-php7.0  // было установлено
+sudo apt-get install php7.0-mbstring
+sudo service apache2 restart
+
+??????????????????????????????????????????????????????????
+????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+???????????????????????????????????????????????
+???????????????????????????????????????????????
+
+Установка PHP 7 в Debian 8                   https://codebeer.ru/ustanovka-php-7-v-debian-8/
+Дата: 08.12.2015Метки: Linux, PHP
+Совсем недавно вышла финальная версия PHP 7.0.0, а это значит, что разработка достигла своего финала и пора обновить инструкцию по установке PHP 7 в Debian. Процесс сборки PHP 7 выполнялся из исходников под OS Debian 8.
+
+Перед началом компиляции, вы можете добавить или удалить модули из сборки PHP 7. В этой статье я использую минимальный набор модулей, который необходим для нормального функционирования WordPress. Дополнительно я опишу процесс добавления модулей, которые не входят в PHP 7 по умолчанию.
+
+Для тех кто не осилит сборку PHP 7 из исходников, описание установки PHP 7 из репозитория Dotdeb можно прочитать по этой ссылке.
+
+Для начала установим все необходимые для сборки и работы PHP 7 зависимости:
+
+apt-get install build-essential autoconf re2c bison libssl-dev libcurl4-openssl-dev pkg-config libpng-dev libxml2-dev libxml2 libcurl3
+
+Указанные выше зависимости составлены исходя из указанных мной модулей PHP 7. Если вы хотите добавить другие модули, возможно, понадобиться дополнительно установить необходимые для сборки пакеты. Иначе в процессе выполнения команды ./configure вы получите ошибку.
+
+Установка PHP 7
+
+Все действия будем выполнять в директории:
+
+cd /usr/src
+Скачиваем и распаковываем исходники PHP 7.0.8:
+
+wget http://de1.php.net/get/php-7.0.8.tar.bz2/from/this/mirror -O php-7.0.8.tar.bz2
+tar -xvjf php-7.0.8.tar.bz2
+Если на момент чтения этой статьи, уже вышла более свежая версия PHP 7, скачайте самостоятельно исходники с официального сайта.
+
+Переходим в каталог с исходниками PHP 7:
+
+cd php-7.0.8
+Для того чтобы установить PHP 7, нам необходимо выполнить компиляцию из исходников. Перед тем как начать, добавьте или удалите неиспользуемые модули из состава PHP 7 и укажите параметры сборки.
+
+./buildconf --force
+
+CONFIGURE_STRING="--prefix=/usr/local/php-fpm 
+--enable-fpm
+--enable-mysqlnd
+--enable-mbstring
+--disable-pdo
+--disable-phar
+--with-config-file-scan-dir=/usr/local/php-fpm/etc/conf.d
+--with-curl
+--with-gd
+--with-fpm-user=www-data
+--with-fpm-group=www-data
+--with-mysql-sock=/var/run/mysqld/mysqld.sock
+--with-mysqli=mysqlnd
+--with-zlib
+--without-sqlite3
+--without-pdo-sqlite"
+Данная конфигурация проверена мной и протестирована на WordPress 4.4.2 с минимальным набором плагинов. Если вы хотите добавить в PHP 7 другие модули, найдите их в списке доступных параметров сборки:
+
+./configure --help
+Для компиляции и установки PHP 7, необходимо выполнить команду:
+
+./configure $CONFIGURE_STRING
+make && make install
+
+............................
+
+Build complete.
+Don't forget to run 'make test'.
+
+mkdir: cannot create directory '/usr/local/php-fpm/lib': Permission denied
+mkdir: cannot create directory '/usr/local/php-fpm/lib/php': No such file or directory
+mkdir: cannot create directory '/usr/local/php-fpm/lib/php/extensions': No such file or directory
+mkdir: cannot create directory '/usr/local/php-fpm/lib/php/extensions/no-debug-non-zts-20151012': No such file or directory
+make: *** [install-modules] Ошибка 1
+.......................
+Создал в ручную все выше перечисленные директории
+valentin@valentin-System-Product-Name /usr/src/php-7.0.8 $              sudo make install
+................// result //................................................
+Installing shared extensions:     /usr/local/php-fpm/lib/php/extensions/no-debug-non-zts-20151012/
+Installing PHP CLI binary:        /usr/local/php-fpm/bin/
+Installing PHP CLI man page:      /usr/local/php-fpm/php/man/man1/
+Installing PHP FPM binary:        /usr/local/php-fpm/sbin/
+Installing PHP FPM config:        /usr/local/php-fpm/etc/
+Installing PHP FPM man page:      /usr/local/php-fpm/php/man/man8/
+Installing PHP FPM status page:   /usr/local/php-fpm/php/php/fpm/
+Installing phpdbg binary:         /usr/local/php-fpm/bin/
+Installing phpdbg man page:       /usr/local/php-fpm/php/man/man1/
+Installing PHP CGI binary:        /usr/local/php-fpm/bin/
+Installing PHP CGI man page:      /usr/local/php-fpm/php/man/man1/
+Installing build environment:     /usr/local/php-fpm/lib/php/build/
+Installing header files:           /usr/local/php-fpm/include/php/
+Installing helper programs:       /usr/local/php-fpm/bin/
+  program: phpize
+  program: php-config
+Installing man pages:             /usr/local/php-fpm/php/man/man1/
+  page: phpize.1
+  page: php-config.1
+Installing PEAR environment:      /usr/local/php-fpm/lib/php/
+[PEAR] Archive_Tar    - installed: 1.4.0
+[PEAR] Console_Getopt - installed: 1.4.1
+[PEAR] Structures_Graph- installed: 1.1.1
+[PEAR] XML_Util       - installed: 1.3.0
+[PEAR] PEAR           - installed: 1.10.1
+Wrote PEAR system config file at: /usr/local/php-fpm/etc/pear.conf
+You may want to add: /usr/local/php-fpm/lib/php to your php.ini include_path
+................................................
+
+Настройка PHP 7
+
+valentin@valentin-System-Product-Name /usr/src/php-7.0.8 $            sudo cp /usr/src/php-7.0.8/php.ini-production /usr/local/php-fpm/lib/php.ini
+
+/////////////////////TO READ////////////////////////////
+
+Менеджер процессов FastCGI (FPM)      //               http://php.net/manual/ru/install.fpm.php
+
+Содержание 
+
+Установка // ??
+Настройка // ??
+FPM (Менеджер процессов FastCGI) является альтернативной реализацией PHP FastCGI с несколькими дополнительными возможностями обычно используемыми для высоконагруженных сайтов.
+
+Эти возможности включают в себя:
+
+продвинутое управление процессами с корректной (graceful) процедурой остановки и запуска;
+
+возможность запуска воркеров с различными uid/gid/chroot-окружением, а также запуска на различных портах с использованием разных php.ini (замещение safe_mode);
+
+логирование стандартных потоков вывода (stdout) и ошибок (stderr);
+
+аварийный перезапуск в случае внезапного разрушения opcode-кэша;
+
+поддержка ускоренной загрузки (accelerated upload);
+
+"slowlog" - логирование необычно медленно выполняющихся скриптов (не только их имена, но также и их трассировки. Это достигается с помощью ptrace и других подобных утилит для чтения данных исполнения удаленных процессов);
+
+fastcgi_finish_request() - специальная функция для завершения запроса и сброса всех буферов данных, причем процесс может продолжать выполнение каких-либо длительных действий (конвертирование видео, обработка статистики и т.п.);
+
+Динамическое/статическое порождение дочерних процессов;
+
+Базовая информация о статусе SAPI (аналогично Apache mod_status);
+
+Конфигурационный файл, основанный на php.ini.
+
+
+//////////////////////////////////////END to read/////////////////////////////////////////////////////////
+
+PHP → Коротко о CGI, FastCGI, PHP-FPM и mod_phpCGI                   //  http://xandeadx.ru/blog/php/866
+
+Common Gateway Interface, "общий интерфейс шлюза" — это стандарт, который описывает, как веб-сервер должен запускать прикладные программы (скрипты), как должен передавать им параметры HTTP-запроса, как скрипты должны передавать результаты своей работы веб-серверу. Прикладную программу взаимодействующую с веб-сервером по протоколу CGI принято называть шлюзом, хотя более распространено название CGI-скрипт или CGI-программа.
+
+В качестве CGI-программ могут использоваться программы/скрипты написанные на любых языках программирования, даже на shell.
+
+CGI-скрипты были популярны до того, как для веб-разработки стали преимущественно использовать PHP. Хотя сам PHP интерпретатор позволяет работать в режиме CGI (см. ниже).
+
+Основной момент: CGI это не язык программирования и не отдельная программа! Это просто протокол (стандарт, спецификация, соглашение, набор правил).
+
+Примеры CGI-скриптов, схема работы CGI.
+
+FastCGI
+
+Дальнейшее развитие технологии CGI, является более производительным и безопасным, снимает множество ограничений CGI-программ.
+
+FastCGI программа работает следующим образом: скрипт единожды загружается в память в качестве демона (независимо от HTTP-сервера), а затем входит в цикл обработки запросов от HTTP-сервера. Один и тот же процесс-скрипт обрабатывает несколько различных запросов один за другим, что отличается от работы в CGI-режиме, когда на каждый запрос создается отдельный процесс, "умирающий" после окончания обработки.
+
+Написание FastCGI программ сложнее чем CGI, нужны дополнительные библиотеки, зависящие от языка.
+
+Опять же, сама аббревиатура FastCGI это не язык программирования и не отдельная программа, это как и в случае CGI — просто спецификация.
+
+PHP в режиме CGI
+
+PHP в режиме CGI это самый старый способ выполнения php-скриптов веб-сервером. Режим доступен по умолчанию, однако может быть отключён при компиляции.
+
+Для Apache нужен модуль mod_cgi (поставляется вместе с Apache). Nginx из коробки поддержки не имеет, хотя существуют дополнительные инструменты.
+
+В данный момент режим используется редко в силу малой производительности.
+
+PHP в режиме FastCGI
+
+Помимо CGI режима, PHP из коробки умеет работать и в FastCGI режиме (с версии 5.3 даже в двух FastCGI режимах). Режим включается флагом при компиляции интерпретатора, флаг зависит от версии PHP.
+
+Для работы с Apache нужен модуль mod_fcgid или mod_fastcgi, либо связка из mod_proxy_fcgi + PHP-FPM.
+
+Nginx умеет работать с FastCGI приложениями из коробки, но именно для PHP дополнительно нужен PHP-FPM (см. ниже).
+
+PHP-FPM
+
+FastCGI Process Manager, "Менеджер процессов FastCGI". Это альтернативная реализация FastCGI режима в PHP с несколь­кими допол­ни­тель­ными воз­мож­но­стя­ми, кото­рые обычно исполь­зу­ются для высо­ко­на­гру­жен­ных сайтов.
+
+Изначально PHP-FPM представлял из себя набор патчей от Андрея Нигматулина, которые устраняли ряд проблем, мешающих полноценно использовать PHP в режиме FastCGI (список улучшений). С версии PHP 5.3 набор патчей включён в ядро, а дополнительные возможности PHP-FPM включаются флагом при компиляции.
+
+PHP-FPM используется в основном в связке с Nginx, без установки Apache.
+
+mod_php
+
+Это модуль для Apache, позволяющий ему выполнять php скрипты. Является наверно самым популярным и простым способом подружить Apache и PHP. Модуль не использует ни CGI, ни FastCGI. Есть свои минусы — скрипты работают под пользователем веб-сервера, невозможно использовать больше одной версии PHP.
+
+
+/////////////////////////////////////////////////////////////////////////
+
+ * Restarting web server apache2                                                AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 127.0.1.1. Set the 'ServerName' directive globally to suppress this message
+                                                                         [ OK ]
+
+/////////////////////////////
+
+
+
+
+
+
+
+
