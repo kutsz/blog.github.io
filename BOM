@@ -1,0 +1,531 @@
+Объектная модель браузера (BOM)
+
+BOM – это объекты для работы с чем угодно, кроме документа.
+The Browser Object Model (BOM)
+
+........................The Window Object..........................
+
+The Browser Object Model (BOM) allows JavaScript to "talk to" the browser
+
+The window object is supported by all browsers. It represents the browser's window.
+All global JavaScript objects, functions, and variables automatically become members of the window object.
+Global variables are properties of the window object.
+Global functions are methods of the window object.
+
+Even the document object (of the HTML DOM) is a property of the window object:
+
+	window.document.getElementById("header");
+
+is the same as:
+
+	document.getElementById("header");
+
+....Window Size
+Two properties can be used to determine the size of the browser window.
+Both properties return the sizes in pixels:
+
+	window.innerHeight          - the inner height of the browser window (in pixels)
+	window.innerWidth           - the inner width of the browser window (in pixels)
+
+	The browser window (the browser viewport) is NOT including toolbars and scrollbars.
+For Internet Explorer 8, 7, 6, 5:
+
+	document.documentElement.clientHeight
+	document.documentElement.clientWidth
+or
+	document.body.clientHeight
+	document.body.clientWidth
+
+ex:
+<p id="demo"></p>
+
+<script>
+var w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+var h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
+var x = document.getElementById("demo");
+x.innerHTML = "Browser inner window width: " + w + ", height: " + h + ".";
+</script>
+
+....Some other methods:
+
+	window.open() 		- open a new window
+	window.close() 		- close the current window
+	window.moveTo() 	-move the current window
+	window.resizeTo() 	-resize the current window
+
+...............................Window Screen....................................
+The window.screen object contains information about the user's screen.
+
+The window.screen object can be written without the window prefix.
+
+Properties:
+
+	screen.width             -  The screen.width property returns the width of the visitor's screen in pixels.
+	screen.height            -  The screen.height property returns the height of the visitor's screen in pixels.
+	screen.availWidth        -  Window Screen Available Width    (The screen.availWidth property returns the width of the visitor's screen, in pixels, minus interface
+                                                                      features like the Windows Taskbar.)
+	screen.availHeight       - 
+	screen.colorDepth        -  The screen.colorDepth property returns the number of bits used to display one color.
+					All modern computers use 24 bit or 32 bit hardware for color resolution:
+
+					24 bits =      16,777,216 different "True Colors"
+					32 bits = 4,294,967,296 different "Deep Colors"
+					Older computers used 16 bits: 65,536 different "High Colors" resolution.
+
+					Very old computers, and old cell phones used 8 bits: 256 different "VGA colors".
+
+	screen.pixelDepth        -   The screen.pixelDepth property returns the pixel depth of the screen.
+
+
+......................................Window Location..............................................
+The window.location object can be used to get the current page address (URL) and to redirect the browser to a new page.
+The window.location object can be written without the window prefix.
+
+Some examples:
+
+	window.location.href              returns the href (URL) of the current page
+	window.location.hostname          returns the domain name of the web host
+	window.location.pathname          returns the path and filename of the current page
+	window.location.protocol          returns the web protocol used (http:// or https://)
+	window.location.assign            loads a new document
+
+...........................Window History..............................................................
+The window.history object contains the browsers history.
+The window.history object can be written without the window prefix.
+
+Some methods:
+
+	history.back()    	- same as clicking back in the browser
+	history.forward() 	- same as clicking forward in the browser
+ex:
+<html>
+<head>
+	<script>
+		function goBack() {
+		    window.history.back()
+		}
+
+		function goForward() {
+		    window.history.forward()
+		}
+	</script>
+</head>
+<body>
+
+		<input type="button" value="Back" onclick="goBack()">
+		<input type="button" value="Forward" onclick="goForward()">
+
+
+</body>
+</html>
+
+....................................Window Navigator........................................
+
+The window.navigator object contains information about the visitor's browser.
+
+The window.navigator object can be written without the window prefix.
+
+Some examples:
+
+	navigator.appName           The properties appName and appCodeName return the name of the browser
+	navigator.appCodeName
+	navigator.platform           The property platform returns the browser platform (operating system)
+
+	navigator.cookieEnable         The property cookieEnabled returns true if cookies are enabled, otherwise false
+	navigator.product             The property product returns the engine name of the browser
+	navigator.appVersion          The property appVersion returns version information about the browser
+	navigator.userAgent            The property userAgent also returns version information about the browser
+	navigator.language            The property language returns the browser's language
+	navigator.javaEnabled()        The method javaEnabled() returns true if Java is enabled
+
+....
+Warning !!!
+The information from the navigator object can often be misleading, and should not be used to detect browser versions because:
+
+Different browsers can use the same name
+The navigator data can be changed by the browser owner
+Some browsers misidentify themselves to bypass site tests
+Browsers cannot report new operating systems, released later than the browser
+
+....
+Note	Did you know?
+
+IE11, Chrome, Firefox, and Safari return appName "Netscape".
+
+Chrome, Firefox, IE, Safari, and Opera all return appCodeName "Mozilla".
+
+............................JavaScript Popup Boxes..............................
+JavaScript has three kind of popup boxes: Alert box, Confirm box, and Prompt box.
+
+....Alert Box
+An alert box is often used if you want to make sure information comes through to the user.
+
+When an alert box pops up, the user will have to click "OK" to proceed.
+
+Syntax
+window.alert("sometext");
+
+The window.alert() method can be written without the window prefix.
+
+Example
+alert("I am an alert box!");
+
+....Confirm Box
+A confirm box is often used if you want the user to verify or accept something.
+
+When a confirm box pops up, the user will have to click either "OK" or "Cancel" to proceed.
+
+If the user clicks "OK", the box returns true. If the user clicks "Cancel", the box returns false.
+
+Syntax
+window.confirm("sometext");
+The window.confirm() method can be written without the window prefix  
+var r = confirm("Press a button");
+if (r == true) {
+    x = "You pressed OK!";
+} else {
+    x = "You pressed Cancel!";
+}
+....Prompt Box
+A prompt box is often used if you want the user to input a value before entering a page.
+
+When a prompt box pops up, the user will have to click either "OK" or "Cancel" to proceed after entering an input value.
+
+If the user clicks "OK" the box returns the input value. If the user clicks "Cancel" the box returns null.
+
+Syntax
+window.prompt("sometext","defaultText");
+The window.prompt() method can be written without the window prefix.
+
+var person = prompt("Please enter your name", "Harry Potter");
+if (person != null) {
+    document.getElementById("demo").innerHTML =
+    "Hello " + person + "! How are you today?";
+}
+....Line Breaks
+To display line breaks inside a popup box, use a back-slash followed by the character n.
+
+Example
+alert("Hello\nHow are you?");
+
+...................................JavaScript Timing Events..................................
+
+
+JavaScript can be executed in time-intervals.
+
+This is called timing events.
+
+....Timing Events
+The window object allows execution of code at specified time intervals.
+These time intervals are called timing events.
+The two key methods to use with JavaScript are:
+
+	setTimeout(function, milliseconds)         Executes a function, after waiting a specified number of milliseconds.
+	setInterval(function, milliseconds)        Same as setTimeout(), but repeats the execution of the function continuously.
+
+Note!	The setTimeout() and setInterval() are both methods of the HTML DOM Window object.
+
+window.setTimeout(function, milliseconds);  The first parameter is a function to be executed.
+                                            The second parameter indicates the number of milliseconds before execution.
+
+Example
+Click a button. Wait 3 seconds, and the page will alert "Hello":
+
+<button onclick="setTimeout(myFunction, 3000)">Try it</button>
+
+<script>
+function myFunction() {
+    alert('Hello');
+}
+</script>
+....How to Stop the Execution?
+The clearTimeout() method stops the execution of the function specified in setTimeout().
+
+window.clearTimeout(timeoutVariable)                  The window.clearTimeout() method can be written without the window prefix.
+
+The clearTimeout() method uses the variable returned from setTimeout():
+
+myVar = setTimeout(function, milliseconds);
+clearTimeout(myVar);
+
+If the function has not already been executed, you can stop the execution by calling the clearTimeout() method:
+
+<button onclick="myVar = setTimeout(myFunction, 3000)">Try it</button>
+
+<button onclick="clearTimeout(myVar)">Stop it</button>
+
+
+....The setInterval() Method
+The setInterval() method repeats a given function at every given time-interval.
+
+window.setInterval(function, milliseconds);
+The first parameter is the function to be executed.
+
+The second parameter indicates the length of the time-interval between each execution.
+There are 1000 milliseconds in one second.
+This example executes a function called "myTimer" once every second (like a digital watch).
+
+<p id="demo"></p>
+
+<script>
+var myVar = setInterval(myTimer, 1000);
+
+function myTimer() {
+    var d = new Date();
+    document.getElementById("demo").innerHTML = d.toLocaleTimeString();
+}
+</script>
+
+How to Stop the Execution?
+The clearInterval() method stops the executions of the function specified in the setInterval() method.
+
+window.clearInterval(timerVariable)
+The window.clearInterval() method can be written without the window prefix.
+
+The clearInterval() method uses the variable returned from setInterval():
+
+myVar = setInterval(function, milliseconds);
+clearInterval(myVar);
+
+ex:
+<button onclick="clearInterval(myVar)">Stop time</button>
+
+.............................JavaScript Cookies...................................
+Cookies let you store user information in web pages.
+What are Cookies?
+Cookies are data, stored in small text files, on your computer.
+When a web server has sent a web page to a browser, the connection is shut down, and the server forgets everything about the user.
+
+Cookies were invented to solve the problem "how to remember information about the user":
+
+When a user visits a web page, his name can be stored in a cookie.
+Next time the user visits the page, the cookie "remembers" his name.
+Cookies are saved in name-value pairs like:
+
+username = John Doe
+
+When a browser requests a web page from a server, cookies belonging to the page is added to the request. This way the server gets the necessary data to "remember" information about users.
+
+....Create a Cookie with JavaScript
+JavaScript can create, read, and delete cookies with the document.cookie property.
+With JavaScript, a cookie can be created like this:
+
+document.cookie = "username=John Doe";
+You can also add an expiry date (in UTC time). By default, the cookie is deleted when the browser is closed:
+
+document.cookie = "username=John Doe; expires=Thu, 18 Dec 2013 12:00:00 UTC";
+
+With a path parameter, you can tell the browser what path the cookie belongs to. By default, the cookie belongs to the current page.
+
+document.cookie = "username=John Doe; expires=Thu, 18 Dec 2013 12:00:00 UTC; path=/";
+....Read a Cookie with JavaScript
+With JavaScript, cookies can be read like this:
+
+var x = document.cookie;
+
+NOTE!	document.cookie will return all cookies in one string much like: cookie1=value; cookie2=value; cookie3=value;
+
+....Change a Cookie with JavaScript
+With JavaScript, you can change a cookie the same way as you create it:
+
+document.cookie = "username=John Smith; expires=Thu, 18 Dec 2013 12:00:00 UTC; path=/";
+The old cookie is overwritten.
+
+....Delete a Cookie with JavaScript
+Deleting a cookie is very simple. Just set the expires parameter to a passed date:
+
+document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+Note that you don''t have to specify a cookie value when you delete a cookie.
+....The Cookie String
+
+The document.cookie property looks like a normal text string. But it is not.
+
+Even if you write a whole cookie string to document.cookie, when you read it out again, you can only see the name-value pair of it.
+
+If you set a new cookie, older cookies are not overwritten. The new cookie is added to document.cookie, so if you read document.cookie again you will get something like:
+
+cookie1 = value; cookie2 = value;
+If you want to find the value of one specified cookie, you must write a JavaScript function that searches for the cookie value in the cookie string.
+
+..........////   ..............  JavaScript Cookie Example  ................////    ............................
+In the example to follow, we will create a cookie that stores the name of a visitor.
+
+The first time a visitor arrives to the web page, he will be asked to fill in his name. The name is then stored in a cookie.
+
+The next time the visitor arrives at the same page, he will get a welcome message.
+
+For the example we will create 3 JavaScript functions:
+
+A function to set a cookie value
+A function to get a cookie value
+A function to check a cookie value
+
+.... A Function to Set a Cookie
+
+First, we create a function that stores the name of the visitor in a cookie variable:
+
+Example
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+ d.toUTCString();
+    document.cookie = cname + "=" + cvalue + "; " + expires;
+}
+Example explained:
+
+The parameters of the function above are the name of the cookie (cname), the value of the cookie (cvalue), and the number of days until the cookie should expire (exdays).
+
+The function sets a cookie by adding together the cookiename, the cookie value, and the expires string.
+
+....    A Function to Get a Cookie
+
+Then, we create a function that returns the value of a specified cookie:
+
+Example
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length,c.length);
+        }
+    }
+    return "";
+}
+Function explained:
+
+Take the cookiename as parameter (cname).
+
+Create a variable (name) with the text to search for (cname + "=").
+
+Split document.cookie on semicolons into an array called ca (ca = document.cookie.split(';')).
+
+Loop through the ca array (i=0;i<ca.length;i++), and read out each value c=ca[i]).
+
+If the cookie is found (c.indexOf(name) == 0), return the value of the cookie (c.substring(name.length,c.length).
+
+If the cookie is not found, return "".
+
+....    A Function to Check a Cookie
+
+Last, we create the function that checks if a cookie is set.
+
+If the cookie is set it will display a greeting.
+
+If the cookie is not set, it will display a prompt box, asking for the name of the user, and stores the username cookie for 365 days, by calling the setCookie function:
+
+Example
+function checkCookie() {
+    var username=getCookie("username");
+    if (username!="") {
+        alert("Welcome again " + username);
+    } else {
+        username = prompt("Please enter your name:", "");
+        if (username != "" && username != null) {
+            setCookie("username", username, 365);
+        }
+    }
+}
+....    All Together Now
+
+Example
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + "; " + expires;
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+function checkCookie() {
+    var user = getCookie("username");
+    if (user != "") {
+        alert("Welcome again " + user);
+    } else {
+        user = prompt("Please enter your name:", "");
+        if (user != "" && user != null) {
+            setCookie("username", user, 365);
+        }
+    }
+}
+
+...........................................................
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
