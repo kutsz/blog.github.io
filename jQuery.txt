@@ -1,0 +1,1984 @@
+
+ The jQuery library is a single JavaScript file, and you reference it with the HTML <script> tag (notice that the <script> tag should be inside the <head> section):
+ПОВТОР:iNSIDE THE <HEAD>  // TODO 
+	<head>
+	 <script src="jquery-1.12.2.min.js"></script>
+	</head>
+ Tip: Place the downloaded file in the same directory as the pages where you wish to use it.
+
+<head>
+<script src="jquery-1.12.0.min.js"></script>
+<script src="scripts/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+</head>
+
+	<head>
+	 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"> </script>
+	 <script src="my_jquery_functions.js"></script>
+	</head>
+ Do you wonder why we do not have type="text/javascript" inside the <script> tag?
+ This is not required in HTML5. JavaScript is the default scripting language in HTML5 and in all modern browsers!
+
+Google CDN:
+	<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+	</head>
+
+Microsoft CDN:
+	<head>
+	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.2.min.js"></script>
+	</head>
+
+
+
+
+............................................
+Basic syntax is:      $(selector).action()
+
+A $ sign to define/access jQuery
+A (selector) to "query (or find)" HTML elements
+A jQuery action() to be performed on the element(s)
+
+
+Базовая синтаксис: $ ( селектор .) Действие ()
+
+A $ знак, чтобы определить / JQuery доступа
+А ( Селектор ), чтобы "запроса (или найти)" HTML элементы
+JQuery действие () должны быть выполнены на элементе (ы)
+...................................................
+
+$(document).ready(function(){                           // This is to prevent any jQuery code from running before the document is finished loading (is ready).
+
+   // jQuery methods go here...
+
+}); 
+
+Это хорошая практика, чтобы дождаться документ, который будет полностью загружен и готов перед началом работы с ним. 
+Here are some examples of actions that can fail if methods are run before the document is fully loaded:
+
+Пытаясь скрыть элемент, который еще не создан
+Попытка получить размер изображения, который еще не загружен
+..................................................
+Tip: The jQuery team has also created an even shorter method for the document ready event:
+
+ <script>
+       $(function(){
+              $("h2").css("color", "red");
+       });
+ </script>
+
+/////////////////////////
+
+jQuery Selectors
+$("*")	                                               Selects all elements	
+$(this)	                                               Selects the current HTML element	
+$("p.intro")	                                       Selects all <p> elements with class="intro"	
+$("p:first")	                                       Selects the first <p> element	
+$("ul li:first")	                               Selects the first <li> element of the first <ul>	
+$("ul li:first-child")	                               Selects the first <li> element of every <ul>	
+$("[href]")	                                       Selects all elements with an href attribute	
+$("a[target='_blank']")	                               Selects all <a> elements with a target attribute value equal to "_blank"	
+$("a[target!='_blank']")	                       Selects all <a> elements with a target attribute value NOT equal to "_blank"	
+$(":button")	                                       Selects all <button> elements and <input> elements of type="button"	
+$("tr:even")	                                       Selects all even <tr> elements	
+$("tr:odd")	                                       Selects all odd <tr> elements
+. . . . . . . 
+
+Если ваш сайт содержит много страниц, и вы хотите, чтобы ваши функции JQuery быть просты в обслуживании, вы можете поместить свои функции JQuery в отдельный файл .js.
+
+
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js">
+</script>
+<script src="my_jquery_functions.js"></script>
+</head>
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> EVENTs   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+jQuery Event Methods
+..............
+Mouse Events	           Keyboard Events	           Form Events	               Document/Window Events
+
+click	                     keypress	                     submit	                       load
+dblclick	              keydown	                     change	                      resize
+mouseenter	               keyup	                      focus	                      scroll
+mouseleave	 	                                       blur	                      unload
+.................................................................................................................
+
+$(document).ready()   //  method allows us to execute a function when the document is fully loaded.
+                          позволяет выполнить функцию, когда документ полностью загружен
+
+ click()              //  method attaches an event handler function to an HTML element
+                          присоединяет обработчик событий к HTML элемента.
+                          Функция выполняется, когда пользователь нажимает на HTML элемента.
+
+Example
+$("p").click( function() {      //The function is executed when the user clicks on the HTML element.The following example says: When a click event fires on a <p> element; hide the current <p> element:
+              $(this).hide();
+             } );
+
+$("p").dblclick(function(){  //The function is executed when the user double-clicks on the HTML element:
+    $(this).hide();
+});
+
+$("#p1").mouseenter(function(){   //The function is executed when the mouse pointer enters the HTML element:
+    alert("You entered p1!");
+});
+
+$("#p1").mouseleave(function(){   //The function is executed when the mouse pointer leaves the HTML element:
+    alert("Bye! You now leave p1!");
+});
+
+$("#p1").mousedown(function(){   //The function is executed, when the left, middle or right mouse button is pressed down, while the mouse is over the HTML element
+    alert("Mouse down over p1!");
+});
+
+$("#p1").mouseup(function(){   //The function is executed, when the left, middle or right mouse button is released, while the mouse is over the HTML element:
+    alert("Mouse up over p1!");
+});
+
+
+hover()
+The first function is executed when the mouse enters the HTML element, and the second function is executed when the mouse leaves the HTML element:
+	<!DOCTYPE html>
+	<html>
+	<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+	<script>
+
+	$(document).ready(function(){
+
+	    $("#p1").hover(
+                           function(){
+		                       alert("You entered p1!");
+	                   },
+	                   function(){
+		                       alert("Bye! You now leave p1!");
+	                   }
+                     ); 
+
+	});
+
+	</script>
+	</head>
+	<body>
+
+	<p id="p1">This is a paragraph.</p>
+
+	</body>
+	</html>
+
+$("input").focus(function(){
+    $(this).css("background-color", "#cccccc");  //The function is executed when the form field gets focus:
+});
+
+$("input").blur(function(){
+    $(this).css("background-color", "#ffffff");  //The function is executed when the form field loses focus:
+});
+
+The on() Method
+The on() method attaches one or more event handlers for the selected elements.
+
+Attach a click event to a <p> element:
+
+Example
+$("p").on("click", function(){
+    $(this).hide();
+});
+
+Attach multiple event handlers to a <p> element:
+
+$("p").on({
+    mouseenter: function(){
+        $(this).css("background-color", "lightgray");
+    }, 
+    mouseleave: function(){
+        $(this).css("background-color", "lightblue");
+    }, 
+    click: function(){
+        $(this).css("background-color", "yellow");
+    } 
+});
+.......................................
+
+$("#orderedlist").find("li").each(function(i) {         ////    $(this)
+    $(this).append( "Номер " + i );
+});
+ мы выбрали именно этот указатель, поскольку нам необходимо обратится элементу списка, так сказать, не в его «первозданном» виде, а в виде jQuery-сущности, чтобы вызвать метод append().
+
+
+$("#reset").click(function() {                         ////     this
+    $("form").each(function() {
+       this.reset();
+    });
+});
+мы использовали непосредственно this для сброса формы. Метод reset() - это прямой JavaScript-метод, обращаться к форме как jQuery-сущности нет необходимости.
+
+Вам нужен $(this), когда Вы собираетесь работать с объектом jQuery. Если же Вы хотите обратиться напрямую к объекту DOM, тогда Вам нужен именно this.
+Стоит учитывать, что jQuery всегда возвращает массив, даже в том случае, если найден всего один элемент (тогда он будет первым, а точнее - нулевым элементом массива). Поэтому справедливым будет выражение $(this)[0] == this. Здесь важно понимать, что обращение к элементу jQuery по индексу в квадратных скобках вернёт не объект типа jQuery (как мог бы подумать новичёк), а соответствующий ему объект DOM. Если же вы хотите из массива jQuery получить первый объект в виде jQuery-сущности, используйте для этого функцию eq().
+читывая вышесказанное, справедливым будет выражение:
+
+Код:
+$("#mydiv")[0] == document.getElementById("mydiv")
+
+.....................................................
+dblclick()      // method attaches an event handler function to an HTML element.
+           The function is executed when the user double-clicks on the HTML element:
+              Функция выполняется, когда пользователь дважды нажимает на элемент HTML:
+пример
+$("p").dblclick(function(){
+    $(this).hide();
+});
+
+..................
+
+mouseenter()   //  method attaches an event handler function to an HTML eleme 
+                   The function is executed when the mouse pointer enters the HTML element:
+                   Функция выполняется, когда указатель мыши входит в HTML элемент:
+пример
+$("#p1").mouseenter(function(){
+    alert("You entered p1!");
+});
+
+
+.........................
+
+ mouseleave()  //  method attaches an event handler function to an HTML element.
+                   The function is executed when the mouse pointer leaves the HTML element:
+                   Функция выполняется, когда указатель мыши покидает HTML элемент:
+пример
+$("#p1").mouseleave(function(){
+    alert("Bye! You now leave p1!");
+});
+
+.......................................
+
+mousedown()          // The function is executed, when the left, middle or right mouse button is pressed down, while the mouse is over the HTML element:
+                          Функция выполняется, когда левая, средний или правой кнопки мыши в нажатом положении, пока мышь находится над HTML элемента:
+Example
+$("#p1").mousedown(function(){
+    alert("Mouse down over p1!");
+});
+
+...............................................
+mouseup()             //  The function is executed, when the left, middle or right mouse button is released, while the mouse is over the HTML element:
+                           Функция выполняется, когда левая, средняя или правая кнопка мыши будет отпущена, а мышь находится над HTML элемента:
+Example
+$("#p1").mouseup(function(){
+    alert("Mouse up over p1!");
+});
+....................................................
+hover()    //   method takes two functions and is a combination of the mouseenter() and mouseleave() methods.
+               The first function is executed when the mouse enters the HTML element, and the second function is executed when the mouse leaves the HTML element:
+                 Первая функция выполняется, когда мышь входит в HTML элемент, и вторая функция выполняется, когда мышь покидает HTML элемент:
+Example
+$("#p1").hover(function(){
+    alert("You entered p1!");
+},
+function(){
+    alert("Bye! You now leave p1!");
+});
+
+...............................................
+
+focus()  // The function is executed when the form field gets focus:
+             Функция выполняется, когда поле формы получает фокус:
+Example
+$("input").focus(function(){
+    $(this).css("background-color", "#cccccc");
+});
+
+..............................
+
+blur()     //  The function is executed when the form field loses focus:
+            Функция выполняется, когда поле формы теряет фокус:
+Example
+$("input").blur(function(){
+    $(this).css("background-color", "#ffffff");
+});
+
+.....................................
+on()           //  method attaches one or more event handlers for the selected elements.
+                   Attach a click event to a <p> element:
+                     придает один или несколько обработчиков событий для выбранных элементов.
+                     Приложить событие нажмите чтобы элемент <P>:
+
+
+Example
+$("p").on("click", function(){
+    $(this).hide();
+});
+
+Присоединить несколько обработчиков событий к элемента <P>:
+
+$("p").on({
+    mouseenter: function(){
+        $(this).css("background-color", "lightgray");
+    }, 
+    mouseleave: function(){
+        $(this).css("background-color", "lightblue");
+    }, 
+    click: function(){
+        $(this).css("background-color", "yellow");
+    } 
+});
+.....................................................
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  jQuery hide() and show() >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>..
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+    $("#hide").click(function(){
+        $("p").hide();
+    });
+    $("#show").click(function(){
+        $("p").show();
+    });
+});
+</script>
+</head>
+<body>
+
+<p>If you click on the "Hide" button, I will disappear.</p>
+
+<button id="hide">Hide</button>
+<button id="show">Show</button>
+
+</body>
+</html>
+................................
+Syntax:
+
+$(selector).hide(speed,callback);
+
+$(selector).show(speed,callback);
+
+The optional speed parameter specifies the speed of the hiding/showing, and can take the following values: "slow", "fast", or milliseconds.
+The optional callback parameter is a function to be executed after the hide() or show() method completes
+
+$("button").click(function(){
+    $("p").hide(1000);
+});
+............
+toggle()  //нажал - спрятал,нажал - показал
+With jQuery, you can toggle between the hide() and show() methods with the toggle() method.
+Shown elements are hidden and hidden elements are shown:
+
+$(selector).toggle(speed,callback);
+
+$("button").click(function(){
+    $("p").toggle();
+});
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  jQuery Effects - Fading  >>>>>>>>>>>>>>>>>>>>>>>>>
+
+With jQuery you can fade elements in and out of visibility.
+The optional speed parameter specifies the duration of the effect. It can take the following values: "slow", "fast", or milliseconds.
+The optional callback parameter is a function to be executed after the fading completes.
+
+fadeIn()            $(selector).fadeIn(speed,callback);   // появиться
+
+fadeOut()           $(selector).fadeOut(speed,callback);   // исчезнуть
+
+fadeToggle()         $(selector).fadeToggle(speed,callback);// появиться,исчезнуть
+
+fadeTo()              $(selector).fadeTo(speed,opacity,callback);  // method allows fading to a given opacity (value between 0 and 1)
+                                                                   // исчезает до определенной величины
+
+
+$("button").click(function(){
+    $("#div1").fadeToggle();
+    $("#div2").fadeToggle("slow");
+    $("#div3").fadeToggle(3000);
+});
+
+$("button").click(function(){
+    $("#div1").fadeTo("slow", 0.15);
+    $("#div2").fadeTo("slow", 0.4);
+    $("#div3").fadeTo("slow", 0.7);
+});
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  jQuery Effects - Sliding   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+The jQuery slide methods slide elements up and down.
+
+slideDown()    $(selector).slideDown(speed,callback);
+slideUp()                   .slideUp( [duration ] [, complete ] )
+slideToggle()          $(selector).slideToggle(speed,callback);
+
+duration (default: 400)
+Type: Number or String
+A string or number determining how long the animation will run.
+
+
+complete
+Type: Function()
+A function to call once the animation is complete, called once per matched element.
+
+<div id="clickme">
+  Click here
+</div>
+<img id="book" src="book.png" alt="" width="100" height="123">
+
+$( "#clickme" ).click(function() {
+  $( "#book" ).slideUp( "slow", function() {
+    // Animation complete.
+  });
+});
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  jQuery Effects - Animation  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+The jQuery animate() method is used to create custom animations.
+
+$(selector).animate({params},speed,callback);
+
+The required params parameter defines the CSS properties to be animated.
+
+The optional speed parameter specifies the duration of the effect. It can take the following values: "slow", "fast", or milliseconds.
+
+The optional callback parameter is a function to be executed after the animation completes.
+
+By default, all HTML elements have a static position, and cannot be moved.
+To manipulate the position, remember to first set the CSS position property of the element to relative, fixed, or absolute!
+
+<script> 
+$(document).ready(function(){
+    $("button").click(function(){
+        $("div").animate({
+            left: '250px',
+            opacity: '0.5',
+            height: '150px',
+            width: '150px',
+            paddingLeft:'25px'
+        });
+    });
+});
+</script> 
+
+Is it possible to manipulate ALL CSS properties with the animate() method?
+
+Yes, almost! However, there is one important thing to remember: all property names must be camel-cased when used with the animate() method: You will need to write paddingLeft instead of padding-left, marginRight instead of margin-right, and so on. 
+
+Also, color animation is not included in the core jQuery library.
+If you want to animate color, you need to download the Color Animations plugin from jQuery.com.
+
+It is also possible to define relative values (the value is then relative to the element's current value). This is done by putting += or -= in front of the value:
+
+$("button").click(function(){
+    $("div").animate({
+        left: '250px',
+        height: '+=150px',
+        width: '+=150px'
+    });
+}); 
+
+You can even specify a property's animation value as "show", "hide", or "toggle":
+
+$("button").click(function(){
+    $("div").animate({
+        height: 'toggle'     // вверх,вниз
+    });
+}); 
+
+By default, jQuery comes with queue functionality for animations.
+
+This means that if you write multiple animate() calls after each other, jQuery creates an "internal" queue with these method calls. Then it runs the animate calls ONE by ONE.
+
+$("button").click(function(){
+    var div = $("div");
+    div.animate({height: '300px', opacity: '0.4'}, "slow");
+    div.animate({width: '300px', opacity: '0.8'}, "slow");
+    div.animate({height: '100px', opacity: '0.4'}, "slow");
+    div.animate({width: '100px', opacity: '0.8'}, "slow");
+}); 
+
+$("button").click(function(){
+    var div = $("div");
+    div.animate({left: '100px'}, "slow");
+    div.animate({fontSize: '3em'}, "slow");
+}); 
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  jQuery Stop Animations  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+The jQuery stop() method is used to stop an animation or effect before it is finished.
+$(selector).stop(stopAll,goToEnd);
+
+The optional stopAll parameter specifies whether also the animation queue should be cleared or not. Default is false, which means that only the active animation will be stopped, allowing any queued animations to be performed afterwards.
+
+The optional goToEnd parameter specifies whether or not to complete the current animation immediately. Default is false.
+
+So, by default, the stop() method kills the current animation being performed on the selected element
+
+$(document).ready(function(){
+    $("#flip").click(function(){
+        $("#panel").slideDown(5000);
+    });
+    $("#stop").click(function(){
+        $("#panel").stop();
+    });
+});
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> jQuery Callback Functions  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JavaScript statements are executed line by line. However, with effects, the next line of code can be run even though the effect is not finished. This can create errors.
+To prevent this, you can create a callback function.
+
+A callback function is executed after the current effect is finished.
+
+Typical syntax: $(selector).hide(speed,callback);
+
+
+The example below has a callback parameter that is a function that will be executed after the hide effect is completed:
+
+Example with Callback
+$("button").click(function(){
+    $("p").hide("slow", function(){
+        alert("The paragraph is now hidden");
+    });
+});
+
+The example below has no callback parameter, and the alert box will be displayed before the hide effect is completed:
+
+Example without Callback
+$("button").click(function(){
+    $("p").hide(1000);
+    alert("The paragraph is now hidden");
+});
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  jQuery - Chaining  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+With jQuery, you can chain together actions/methods.
+Until now we have been writing jQuery statements one at a time (one after the other).
+
+However, there is a technique called chaining, that allows us to run multiple jQuery commands, one after the other, on the same element(s).
+
+Tip: This way, browsers do not have to find the same element(s) more than once.
+
+To chain an action, you simply append the action to the previous action.
+
+The following example chains together the css(), slideUp(), and slideDown() methods. The "p1" element first changes to red, then it slides up, and then it slides down:
+
+Example
+$("#p1").css("color", "red").slideUp(2000).slideDown(2000);
+
+We could also have added more method calls if needed.
+
+Tip: When chaining, the line of code could become quite long. However, jQuery is not very strict on the syntax; you can format it like you want, including line breaks and indentations.
+
+This also works just fine:
+
+Example
+$("#p1").css("color", "red")
+  .slideUp(2000)
+  .slideDown(2000);
+
+jQuery throws away extra whitespace and executes the lines above as one long line of code.
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  jQuery - Get Content and Attributes  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+The DOM defines a standard for accessing HTML and XML documents:
+
+"The W3C Document Object Model (DOM) is a platform and language-neutral interface that allows programs and scripts to dynamically access and update the content, structure, and style of a document."
+
+Get Content - text(), html(), and val()
+
+text() - Sets or returns the text content of selected elements
+html() - Sets or returns the content of selected elements (including HTML markup)
+val() - Sets or returns the value of form fields
+
+$("#btn1").click(function(){
+    alert("Text: " + $("#test").text());
+});
+
+$(document).ready(function(){
+    alert($("p").text());
+});
+
+$(document).ready(function(){
+    alert($("input").val());
+});
+
+Get Attributes - attr() // The jQuery attr() method is used to get attribute values.
+
+$("button").click(function(){
+    alert($("#w3s").attr("href"));
+});
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  jQuery - Set Content and Attributes  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Set Content - text(), html(), and val()
+
+ We will use the same three methods from the previous page to set content:
+
+	text() - Sets or returns the text content of selected elements
+	html() - Sets or returns the content of selected elements (including HTML markup)
+	val() - Sets or returns the value of form fields
+
+$("#btn1").click(function(){
+    $("#test1").text("Hello world!");
+});
+$("#btn2").click(function(){
+    $("#test2").html("<b>Hello world!</b>");
+});
+$("#btn3").click(function(){
+    $("#test3").val("Dolly Duck");
+});
+
+A Callback Function for text(), html(), and val()
+The callback function has two parameters: 
+the index of the current element in the list of elements selected and the original (old) value. 
+You then return the string you wish to use as the new value from the function.
+
+$("#btn1").click(function(){
+    $("#test1").text(function(i, origText){
+        return "Old text: " + origText + " New text: Hello world!
+        (index: " + i + ")"; 
+    });
+});
+
+              Set Attributes - attr()
+The jQuery attr() method is also used to set/change attribute values.
+
+	$("button").click(function(){
+	    $("#w3s").attr("href", "http://www.w3schools.com/jquery");
+	});
+
+	$(document).ready(function(){
+	    $("img").attr("src", "img_pulpitrock.jpg");
+	});
+
+The attr() method also allows you to set multiple attributes at the same time.
+
+	$("button").click(function(){
+	    $("#w3s").attr({
+		"href" : "http://www.w3schools.com/jquery",
+		"title" : "W3Schools jQuery Tutorial"
+	    });
+	});
+
+A Callback Function for attr()
+The callback function has two parameters: the index of the current element in the list of elements selected and the original (old) attribute value. You then return the string you wish to use as the new attribute value from the function.
+
+$("button").click(function(){
+    $("#w3s").attr("href", function(i, origValue){
+        return origValue + "/jquery"; 
+    });
+});
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  jQuery - Add Elements  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+With jQuery, it is easy to add new elements/content.
+Add New HTML Content
+
+append() - Inserts content at the end of the selected elements
+prepend() - Inserts content at the beginning of the selected elements
+after() - Inserts content after the selected elements
+before() - Inserts content before the selected elements
+
+$("p").append("Some appended text.");
+
+$("#btn2").click(function(){
+        $("ol").prepend("<li>Prepended item</li>");
+    });
+
+Add Several New Elements With append() and prepend()
+In the following example, we create several new elements. The elements are created with text/HTML, jQuery, and JavaScript/DOM. Then we append the new elements to the text with the append() method (this would have worked for prepend() too) :
+
+function appendText() {
+    var txt1 = "<p>Text.</p>";              // Create text with HTML
+    var txt2 = $("<p></p>").text("Text.");  // Create text with jQuery
+    var txt3 = document.createElement("p");
+    txt3.innerHTML = "Text.";               // Create text with DOM
+    $("body").append(txt1, txt2, txt3);     // Append new elements
+}
+
+<button onclick="appendText()">Append text</button>
+..............
+jQuery after() and before() Methods
+The jQuery after() method inserts content AFTER the selected HTML elements.
+
+The jQuery before() method inserts content BEFORE the selected HTML elements.
+
+$("img").after("Some text after");
+
+$("img").before("Some text before");
+
+Before ............. After
+
+Add Several New Elements With after() and before()
+
+function afterText() {
+    var txt1 = "<b>I </b>";                   // Create element with HTML
+    var txt2 = $("<i></i>").text("love ");    // Create with jQuery
+    var txt3 = document.createElement("b");   // Create with DOM
+    txt3.innerHTML = "jQuery!";
+    $("img").after(txt1, txt2, txt3);      // Insert new elements after img
+}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  jQuery - Remove Elements  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+Remove Elements/Content
+To remove elements and content, there are mainly two jQuery methods:
+
+remove() - Removes the selected element (and its child elements)
+empty() - Removes the child elements from the selected element
+
+$("#div1").remove();
+
+Filter the Elements to be Removed
+The following example removes all <p> elements with class="test":
+$("p").remove(".test");
+
+This example removes all <p> elements with class="test" and class="demo":  
+$("p").remove(".test, .demo");
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  jQuery - Get and Set CSS Classes >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 
+jQuery Manipulating CSS
+
+	addClass()    - Adds one or more classes to the selected elements
+	removeClass() - Removes one or more classes from the selected elements
+	toggleClass() - Toggles between adding/removing classes from the selected elements
+	css()         - Sets or returns the style attribute
+
+
+	.important {
+	    font-weight: bold;       // свойство [font-weight:]    значение [bold]
+	    font-size: xx-large;
+	}
+
+	.blue {
+	    color: blue;
+	}
+
+ The following example shows how to add class attributes to different elements.
+
+	$("button").click(function(){
+	    $("h1, h2, p").addClass("blue");
+	    $("div").addClass("important");
+	});
+
+You can also specify multiple classes within the addClass() method:
+
+	<div id="div1">This is some text.</div>
+
+	$("button").click(function(){
+	    $("#div1").addClass("important blue");
+	});
+
+ The following example shows how to remove a specific class attribute from different elements:
+
+	$("button").click(function(){
+	    $("h1, h2, p").removeClass("blue");
+	});
+
+The following example will show how to use the jQuery toggleClass() method. This method toggles between adding/removing classes from the selected elements:
+
+	$("button").click(function(){
+	    $("h1, h2, p").toggleClass("blue");
+	});
+
+
+   ___________________   jQuery -  css()   Method
+
+ The css() method sets or returns one or more style properties for the selected elements.
+ 	css("propertyname");
+
+ The following example will return the background-color value of the FIRST matched element:
+
+Example
+	$("p").css("background-color");
+
+ Set a CSS Property
+	css("propertyname","value");
+ The following example will set the background-color value for ALL matched elements:
+
+Example
+	$("p").css("background-color", "yellow");
+
+ Set Multiple CSS Properties
+	css({"propertyname":"value","propertyname":"value",...});
+ The following example will set a background-color and a font-size for ALL matched elements:
+
+Example
+	$("p").css({"background-color": "yellow", "font-size": "200%"});
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>  jQuery Dimension Methods  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+jQuery has several important methods for working with dimensions:
+
+width()
+height()
+innerWidth()
+innerHeight()
+outerWidth()
+outerHeight()
+
+The width() method sets or returns the width of an element (excludes padding, border and margin).
+
+The height() method sets or returns the height of an element (excludes padding, border and margin).
+
+The following example returns the width and height of a specified <div> element:
+
+Example
+$("button").click(function(){
+    var txt = "";
+    txt += "Width: " + $("#div1").width() + "</br>";
+    txt += "Height: " + $("#div1").height();
+    $("#div1").html(txt);
+});
+
+
+The innerWidth() method returns the width of an element (includes padding).
+
+The innerHeight() method returns the height of an element (includes padding).
+
+<script>
+$(document).ready(function(){
+    $("button").click(function(){
+        var txt = "";
+        txt += "Width of div: " + $("#div1").width() + "</br>";
+        txt += "Height of div: " + $("#div1").height() + "</br>";
+        txt += "Inner width of div: " + $("#div1").innerWidth() + "</br>";
+        txt += "Inner height of div: " + $("#div1").innerHeight();
+        $("#div1").html(txt);
+    });
+});
+</script>
+
+The outerWidth() method returns the width of an element (includes padding and border).
+
+The outerHeight() method returns the height of an element (includes padding and border).
+
+The following example returns the outer-width/height of a specified <div> element:
+
+Example
+$("button").click(function(){
+    var txt = "";
+    txt += "Outer width: " + $("#div1").outerWidth() + "</br>";
+    txt += "Outer height: " + $("#div1").outerHeight();
+    $("#div1").html(txt);
+});
+
+
+The outerWidth(true) method returns the width of an element (includes padding, border, and margin).
+
+The outerHeight(true) method returns the height of an element (includes padding, border, and margin).
+
+Example
+$("button").click(function(){
+    var txt = "";
+    txt += "Outer width (+margin): " + $("#div1").outerWidth(true) + "</br>";
+    txt += "Outer height (+margin): " + $("#div1").outerHeight(true);
+    $("#div1").html(txt);
+});
+
+jQuery More width() and height()
+The following example returns the width and height of the document (the HTML document) and window (the browser viewport):
+
+Example
+$("button").click(function(){
+    var txt = "";
+    txt += "Document width/height: " + $(document).width();
+    txt += "x" + $(document).height() + "\n";
+    txt += "Window width/height: " + $(window).width();
+    txt += "x" + $(window).height();
+    alert(txt);
+});
+
+The following example sets the width and height of a specified <div> element:
+
+Example
+$("button").click(function(){
+    $("#div1").width(500).height(500);
+});
+
+>>>>>>>>>>>>>>>>>>>>>>>>>  jQuery Traversing  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Testing jQuery</title>
+</head>
+<body>
+	<p>Hello World!</p>
+	<p class="foo">Another paragraph, but this one has a class.</p>
+	<p><span>This is a span inside a paragraph.</span></p>
+	<p id="bar">Paragraph with an id.
+	<span class="foo">And this sentence is in a span.</span>
+	</p>
+	<script type="text/javascript"
+	   src="http://www.google.com/jsapi"></script>
+	<script type="text/javascript">
+           google.load("jquery", "1.4.2")
+	</script>
+</body>
+</html>
+
+
+/////////////////////  Basic Filters
+
+Filters are another very powerful method of accessing elements in the DOM. Instead of relying on
+element types, classes, or IDs, you’re able to find elements based on their position, current state, or
+other variables.
+    The basic syntax of a filter is a colon (:) followed by the filter name:
+ :filter
+
+In some filters, a parameter can be passed in parentheses:
+:filter(parameter)
+The most common and useful filters are covered in the next few sections.
+
+$("p:last");
+$("p:not(.foo)");
+$("p:odd");
+$("p:eq(3)");  // Selecting Elements by Index
+
+Content Filters 
+$("p:contains(Another)");  // Selecting Elements That Contain Certain Text
+$("p:has(span)"); // Selecting Elements That Contain a Certain Element
+$(":empty");  // Selecting Elements That Are Empty
+  ...
+
+__________________________  Attribute Filters
+
+Element attributes are also a great way to select elements.
+ An attribute is anything in the element that further defines it (this includes the class, href, ID, or title attributes). For the following examples, you''ll be accessing the class attribute.
+
+Selecting Elements That Match an Attribute and Value:
+
+To match elements that have a given attribute and value, enclose the attribute-value pair in square brackets ([]):
+    [attribute=value]
+To select all elements with a class attribute of foo, execute the following in the console:
+$("[class=foo]");
+
+Selecting Elements That Don’t Have the Attribute or Don’t Match the Attribute Value:
+
+Inversely, to select elements that do not match an attribute-value pair, insert an exclamation point (!)
+before the equals sign between the attribute and value:
+     [attribute!=value]
+$("p[class!=foo]");
+   ...
+
+________________________  Form Filters
+
+<form action="#" method="post">
+  <fieldset>
+	<legend>Sign Up Form</legend>
+	<label for="name">Name</label><br />
+	<input name="name" id="name" type="text" /><br />
+	<label for="password">Password</label><br />
+	<input name="password" id="password"
+		type="password" /><br /><br />
+	<label>
+		<input type="radio" name="loc" />
+		I'm on my computer
+	</label><br />
+	<label>
+		<input type="radio" name="loc" checked="checked" />
+		I'm on a shared computer
+	</label><br /><br />
+	<input type="submit" value="Log In" /><br />
+	<label>
+		<input type="checkbox" name="notify"
+			disabled="true" />
+		Keep me signed in on this computer
+	</label><br />
+  </fieldset>
+</form>
+
+
+Matching by Form Element Type:
+
+The most common form-specific filters simply match form element types. The available filters are
+	:button, :checkbox, :file, :image, :input, :password, :radio, :submit, :text.
+
+To select all radio inputs, use the following code:
+	$("input:radio");
+This outputs the following in the console:
+	>>> $("input:radio");
+	[ input on, input on ]
+
+
+Selecting Only Enabled or Disabled Form Elements:
+Additionally, filters to select enabled or disabled form elements are available using :enabled and
+:disabled. To select all disabled form elements, use the following code:
+	$(":disabled");
+
+Selecting Checked or Selected Form Elements:
+Radio and check box inputs have a checked state, and select inputs have a selected state. Filters are
+provided to retrieve the form elements that are in either state using :checked or :selected, respectively.
+To select the currently checked radio button in your HTML example, execute the following code in
+the console:
+	$(":checked");
+
+
+////////////////////////////////////////////////////////
+
+/////////////////////////////  Selecting DOM Elements Using CSS Syntax
+
+Selecting Elements by Tag Type
+$("p");
+
+Selecting Tags by Class Name
+$(".foo");
+
+Selecting Elements by ID
+$("#bar");
+
+Combining Selectors for More-Precise Selection
+$("p.foo");
+
+Using Multiple Selectors
+$("p.foo,#bar");
+
+		Selecting Descendant Elements                      
+	ancestor descendent      (предок  потомок)
+	$("body span");
+
+		Selecting Child Elements
+	parent>child
+	$("body>span");
+
+		Selecting Next Elements
+	start+next
+	$(".foo+p");
+
+		Selecting Sibling Elements
+	start~siblings
+	$(".foo~p");
+
+.........................Basic Filters
+:filter(parameter)
+
+Selecting First or Last Elements
+:first   or   :last
+$("p:last");
+
+Selecting Elements that Do Not Match a Selector
+:not()
+$("p:not(.foo)");
+
+Selecting Even or Odd Elements
+:even   and   :odd
+$("p:odd");
+
+Selecting Elements by Index
+:eq()
+$("p:eq(3)");
+
+......Content Filters
+Selecting Elements That Contain Certain Text
+:contains()
+$("p:contains(Another)");
+
+Selecting Elements That Contain a Certain Element
+:has()
+$("p:has(span)");
+
+Selecting Elements That Are Empty
+:empty
+$(":empty");
+
+Selecting Elements That Are Parents
+The opposite of :empty, :parent will only match elements that contain children, which can be either
+other elements, text, or both.
+$("p:parent");
+
+....
+Select all elements at an index greater than index within the matched set.
+jQuery( ":gt(index)" )
+index: Zero-based index.
+
+version added: 1.8jQuery( ":gt(-index)" )
+indexFromEnd: Zero-based index, counting backwards from the last element
+$( "p:gt(2)" );
+
+.....Visibility Filters
+:hidden and :visible
+$("p:visible");
+
+.....Attribute Filters
+An attribute is anything in the element that
+further defines it (this includes the class, href, ID, or title attributes).
+
+Selecting Elements That Match an Attribute and Value
+[attribute=value]
+$("[class=foo]");
+
+Selecting Elements That Don’t Have the Attribute or Don’t Match the Attribute Value
+[attribute!=value]
+$("p[class!=foo]");
+
+.....Child Filters
+Child filters add an alternative to the use of :even, :odd, or :eq(). The main difference is that this set of
+filters starts indexing at 1 instead of 0 (like :eq() does).
+
+Selecting Even or Odd Parameters or Parameters by Index or Equation
+:nth-child()
+$("p:nth-child(odd)");
+
+Selecting First or Last Child Elements
+:first-child and :last-child
+$("p span:last-child");
+
+..............Form Filters
+
+Matching by Form Element Type
+:button, :checkbox, :file, :image, :input, :password, :radio, :submit, and :text
+$("input:radio");
+
+Selecting Only Enabled or Disabled Form Elements
+:enabled  and  :disabled
+$(":disabled");
+
+Selecting Checked or Selected Form Elements
+:checked or :selected
+$(":checked");
+
+
+
+/////////////////////////////////////////////  Traversing DOM Elements
+
+.eq()     
+indices start at 0    
+one element identified by its index
+$("p").eq(1);
+To select the same paragraph as the preceding example by counting backward from the end of the
+result set, use the following code:
+$("p").eq(-3);
+
+
+.filter() and .not()
+For instance, to select all paragraphs and then filter out all but the ones with class foo, you would
+use the following:
+$("p").filter(".foo");
+
+For instance, to select all paragraphs and then limit the selection to paragraphs that
+do not have the class foo, you would use the following:
+$("p").not(".foo");
+
+
+.first() and .last()
+The .first() and .last() methods work identically to .eq(0) and .eq(-1)
+$("p").last();
+
+
+.has()
+Выбрать элемент, который содержит эл.,соотв. опред. шаблону
+To select an element that contains elements matching a certain pattern
+>>> $("p").has("span");
+[ p, p#bar ]
+
+.is()           
+The result is a Boolean (true or false)
+>>> $("p").is(".foo");
+true
+
+
+.slice()
+Выбрать подмножество
+To select a subset of elements based on its index
+$("p").slice(1,3);
+To select the last two elements from the paragraph set      $("p").slice(-2);         
+
+.children()
+
+.closest()
+Поиск ближайшего элемента-предка(родительского элемента),соответств. данному селектору,начиная с текущего элемента и перемещаясь вверх по DOM-дереву
+The .closest() method is an easy way to find elements up the DOM tree, which is the nesting order of
+elements (a DOM tree relationship in your example is the span within a paragraph within the body
+element).
+>>> $("span.foo").closest("p");
+[ p#bar ]
+
+<p id="bar">Paragraph with an id.
+
+	<span class="foo">And this sentence is in a span.</span>
+</p>
+
+.find()
+To demonstrate, select the body tag and then find any contained span elements using the following:
+$("body").find("span");
+
+.next(), .nextAll(), .nextUntil()
+.nextUntil()- method. As its name suggests, this method will return all next elements until a selector is matched.
+ It’s important tonote that the element matched by the selector will not be included in the result set.
+$(".foo").nextUntil("#bar");
+
+.prev(), .prevAll(), .prevUntil()
+
+.siblings()
+
+.parent()
+
+.parents() , .parentsUntil()
+
+.add()
+it allows you to add
+additional elements to the existing jQuery object using a selector or a string of HTML
+
+.contents() ????????????????????
+The .contents() method works similarly to the .children() method, except .contents() returns text
+nodes as well, which are simply the character data contained within an element (the actual text displayed by an element)
+
+
+.end()
+
+///////////////////////////////////////////////////////   Creating and Inserting DOM Elements
+
+jQuery offers a trivial and elegant way to create new elements using the same $() method used to make selections:
+
+/ Creating new elements from an HTML string.
+$( "<p>This is a new paragraph</p>" );
+$( "<li class=\"new\">new list item</li>" );
+
+// Creating a new element with an attribute object.
+$( "<a/>", {
+    html: "This is a <strong>new</strong> link",
+    "class": "new",
+    href: "foo.html"
+});
+res:
+<a class="new" href="foo.html">This is a <strong>new</strong> link</a>
+
+Note that the attributes object in the second argument above, the property name class is quoted, although the property names html and href are not. Property names generally do not need to be quoted unless they are reserved words (as class is in this case).
+
+When you create a new element, it is not immediately added to the page. There are several ways to add an element to the page once it's been created.
+
+/ Getting a new element on to the page.
+ 
+var myNewElement = $( "<p>New element</p>" );
+ 
+myNewElement.appendTo( "#content" );
+ 
+myNewElement.insertAfter( "ul:last" ); // This will remove the p from #content!
+ 
+$( "ul" ).last().after( myNewElement.clone() ); // Clone the p so now we have two.
+///////////////
+
+$("<p>");
+
+$('<p class="bat">This is a new paragraph!</p>');
+
+$("<p>", {
+"class":"bat",
+"text":"This is a new paragraph!"
+});
+
+Note: At its simplest, JSON is a key-value pairing where both the key and value are surrounded by quotation
+marks and all key-value pairs are comma-separated and enclosed in curly braces ( {} ). A sample of JSON data
+would be { "key":"value" } or { "key1":"value1", "key2":"value2" } .
+
+JSON требует указывать пары ключ-значение, в которых в кавычки берутся как ключ, так и значение, а все пары отделены друг от друга двоеточиями и 
+  совокупно заключены в фигурные скобки.       { "key":"value" } or { "key1":"value1", "key2":"value2" } .
+
+////////////////////////////   Inserting New Elements into the DOM
+An important note to make here is that the modification of the DOM is temporary, meaning that any
+changes made will be reset back to the original HTML document once the page is refreshed. This
+happens because JavaScript is a client-side language, which means it isn’t modifying the actual files from
+the server, but the browser’s individual interpretation of the file.Changes made with JavaScript can be saved on the server through the use of AJAX (which you’ll
+learn about later in this chapter), which allows JavaScript to interface with server-side languages such as
+PHP.
+
+.append()  присоединяет эл. в конец объекта    Executing the code will add this sentence to the end of each paragraph inside the closing paragraph tag.
+.prepend()          в начало
+
+$("p").append(" This was added by jQuery.");
+
+var para = $("<p>", {
+"text":"I'm a new paragraph!",
+"css":{"background":"yellow"}
+});
+$("body").prepend(para);
+
+<p style="background: yellow;">I'm a new paragraph!</p>
+.......................
+.appendTo()   and   .prependTo()
+Вызываются из присоединяемого объекта и принимают в качестве параметра селектор элемента, к которому объект присоединяется.
+$("<p>", {
+"text":"I'm a new paragraph!",
+"css":{"background":"yellow"}
+})
+.prependTo("body");
+..........................
+.after() and .before() 
+(methods are similar to .append() and .prepend(),except they add the
+content outside the element either before or after it, instead of inside the element at the beginning or
+end.)
+..............................
+.insertAfter() and .insertBefore()
+The same way that .appendTo() and .prependTo() allow for more concise addition of new elements to
+the DOM, .insertAfter() and .insertBefore() offer the same alternative for .after() and .before().
+$("<p>", {
+"text":"A new paragraph."
+})
+.insertAfter("p.foo");
+...............................
+______________.wrap()
+Позволяет поместить сущ. эл. в облочку
+$("span").wrap("<strong />");  [ текст в span будет выделен ]
+The syntax used for the wrapping element is relatively forgiving, and the output shown in Figure 2-7
+could have been accomplished using either "<strong />", "<strong>", or "<strong></strong>".
+$("span").wrap("<strong><em></em></strong>");
+
+$("span").wrap(function(){                                     //callback function (ф-ция обратного вызова)
+return $(this).is(".foo") ? "<strong>" : "<em>";
+});
+[ окружить все элементы span c классом foo дескрипторами strong, а все остальные эл. span - дескрипторами em]
+
+
+
+_____________.unwrap()
+will remove tags that surround a given element. It does not accept any
+arguments; it simply finds the immediate parent element and removes it.
+
+$("span").unwrap();
+
+______________.wrapAll()    // TODO
+
+var div = $("<div>", {
+"css":{"background-color":"yellow"}
+});
+$("p").wrapAll(div);
+
+There’s one important note about .wrapAll(): it will move elements in the DOM to group them. To
+demonstrate this, use .wrapAll() to add a strong tag around all spans in the document:
+$("span").wrapAll("<strong />");
+After executing the command, note that the second span in the document was moved next to the
+first one so they could be wrapped in the same tag
+
+res:
+This is a span inside a paragraph.And this sentence is in a span.// TODO
+
+______________.wrapInner()
+In some cases, it’s desirable to wrap the content of an element but not the tag itself.
+$("p").wrapInner("<em />");
+
+___________________.remove() and .detach()
+To remove an element from the DOM entirely, the .remove() and .detach() methods are used. Both
+methods remove selected elements from the DOM, but the .detach() method keeps jQuery data for the
+element intact(сохраняет данные jQuery, ассоциированные с удаленным эл.), which makes it ideal for situations in which an element will be reattached to the DOM at
+some point.(предполагает последующее присоединение данного эл. к DOM в др. точке)
+Both .remove() and .detach() accept an optional selector to filter the elements being removed. In
+your example, remove all paragraphs with class foo using the following:
+
+$("p").remove(".foo"); // удалить все абзацы с классом foo
+
+//TODO
+
+
+
+
+
+
+
+
+
+///////////////////////////////////              Accessing and Modifying CSS and Attributes
+
+__________ .attr()
+For most element attributes, the .attr() method is used. This method has two purposes: The first is to
+read a given attribute, which is accomplished by supplying the name of the desired attribute as the first
+argument to the method with no other arguments. The second is to set an attribute by passing the name
+of the attribute to be set as the first argument and the value to which it is to be set as the second.
+
+$("p:eq(3)").attr("id"); // извлекать ID     
+"bar"
+
+$("#bar").attr("id", "bat")  //change the ID attribute
+
+Additionally, multiple attributes can be set using JSON format:
+$("p:eq(3)").attr({
+		"id":"baz",
+		"title":"A captivating paragraph, isn't it?"
+});
+
+res:
+<p id="baz" title="A captivating paragraph, isn't it?">
+..............
+$("#ad_block_1").css("display", "none");
+__________ .removeAttr()
+remove an attribute
+
+    <input type="checkbox" name="notify" disabled="true" >
+  $(":checkbox").removeAttr("disabled");
+    <input type="checkbox" name="notify">
+/////////////////////////////////////////////////////
+Кроме атрибутов, также есть свойства элементов, к ним относится selectedIndex , tagName ,
+nodeName , nodeType , ownerDocument , defaultChecked и defaultSelected . Ну вроде бы
+список невелик, можно и запомнить. Для работы со свойствами используем функции из
+семейства prop():
+	prop(propName) — получение значения свойства
+	prop(propName, propValue) — установка значения свойства (также можно использовать hash, либо
+                                    функцию обратного вызова)
+	removeProp(propName) — удаление свойства (скорей всего никогда не понадобится)
+А теперь выключите музыку, и запомните следующее – для отключения элементов формы,
+и для проверки/изменения состояния чекбоксов мы всегда используем функцию prop() ,
+пусть вас не смущает наличие одноименных атрибутов в HTML (это я про disabled и
+checked), используем prop() и точка
+///////////////////////////////////////
+__________ .css()
+The .css() method works just like .attr(), except it applies to styling rules.
+
+$(".foo").css("background");
+
+$(".foo").css({
+	"color":"red",
+	"background":"yellow"
+});
+
+	css(property) — получение значения CSS свойства
+	css(property, value) — установка значения CSS свойства
+	css({key: value, key:value}) — установка нескольких значений
+	css(property, function(index, value) { return value }) — тут для
+установки значения используется функция обратного вызова,
+index это порядковый номер элемента в выборке, value —
+старое значение свойства (в просторечии — callback-функция)
+
+Метод css() возвращает текущее значение, а не прописанное в CSS файле по
+указанному селектору
+
+$("#my").css('color')// получаем значение цвета шрифта
+$("#my").css('color', 'red')// устанавливаем значение цвета шрифтa
+
+// установка нескольких значений
+$("#my").css({
+	'color':'red',
+	'font-size':'14px',
+	'margin-left':'10px'
+})
+// альтернативный способ
+$("#my").css({
+	color:'red',
+	fontSize:'14px',
+	marginLeft:'10px',
+})
+// используя функцию обратного вызова
+$("#my").css('height', function(i, value){
+	return parseFloat(value) * 1.2;
+})
+__________ .text() and .html()
+When dealing with the contents of an element, the .text() and .html() methods are used. The
+difference between the two is that .html() will allow you to read out and insert new HTML tags into an
+element, where .text() is for reading and writing text only.
+If either of these methods is called on an element set with no arguments, the contents of the
+element are returned. When a value is passed to the method, the existing value is overwritten, and the
+new one put in its place.
+
+$("#bar").text(); // считывание текста
+$("#bar").text("This is new text.");// запись текста
+
+$("#bar").html();
+$("#bar").html("This is some <strong>HTML</strong> text.");
+
+__________.val()
+
+Accessing and modifying the content of form elements
+This method returns the value of an input, or if a value is supplied, sets the value of an input.
+$(":submit").val();
+$(":submit").val("Sign In");
+
+__________ .data()
+There's often data about an element you want to store with the element.(сохранение инфо. об эл.)
+Any kind of data can be stored on an element. For the purposes of this article, .data() will be used to store references to other elements.
+
+$("p:first")
+.data("nickname", "Pookie")
+.next("p")
+.data("nickname", "Shnookums");
+
+console.log("My nickname: "+$("p:first").data("nickname"));
+console.log("My nickname: "+$("p:eq(1)").data("nickname"));
+
+
+$("p.foo").data({
+	"nickname":"Wubby",
+	"favorite":{
+		"movie":"Pretty Woman",
+		"music":"Sade",
+		"color":"pink"
+	}
+});
+
+var info = $("p.foo").data(); // cache the data object in a variable
+console.log("Nickname: "+info.nickname);
+console.log("Favorite Movie: "+info.favorite.movie);
+
+
+__________ .addClass(), .removeClass(), .toggleClass()
+The first two methods, .addClass() and .removeClass(), simply add or remove a class
+attribute
+The third method, .toggleClass(), accepts a class name or names and then either adds the class if it
+doesn’t already exist for the element or removes it if the class already exists.
+	$("p:first").addClass("bat");
+console.log("Text: "+$(".bat").text());
+	$("p:first").removeClass("bat");
+console.log("Text: "+$(".bat").text());
+
+Add the class baz and remove the class foo from the second paragraph in the example page using
+the following code:
+	$("p.foo").toggleClass("foo baz");
+
+To revert to the original class of foo and remove baz, select the paragraph, and apply .toggleClass()
+again:
+	$("p.baz").toggleClass("foo baz");
+
+__________ .hasClass()
+The .hasClass() method works similarly to the .is() method in that it determines if a class exists on a
+selected element and then returns either true or false. This makes it ideal for callback functions.
+var msg = $("p:eq(1)").hasClass("foo") ? "Found!" : "Nope!";
+console.log("Class? "+msg);
+
+
+__________ .height() and .width()
+To obtain the height or width of an element, the .height() and .width() methods are handy. Both return
+a value without units, meaning the value returned is an integer (if the element is 68 pixels high,
+.height() will return 68). This differs from .css(), which will return the units of measure as well.
+
+	console.log("Form height: "+$("form").height()+"px");
+
+By passing a value to .height() or .width(), a new value is set. (передача параметра методу ... приводит к
+установке соответств. значения)
+Make all paragraphs on the page 100
+pixels high with a yellow background using the following code:
+	$("p").height(100).css("background","yellow");
+
+
+__________ .innerHeight(), .innerWidth(), .outerHeight(), .outerWidth()
+The inner height and width of an element is the width or height not counting borders or margins.
+(внутр. высота или ширина эл. без рамки)
+You can access this information using the .innerHeight() and .innerWidth() methods.
+If you wish to include the borders in the height or width of the element, use .outerHeight() or
+.outerWidth(). To include margins as well, use .outerHeight(true) or .outerWidth(true).
+(внутр. высота или ширина эл. с учетом размеров рамки)
+
+
+////////////////// Affecting Result Sets
+Для обработки наборов элементов нам потребуется ряд методов, позволяющих воздействовать на каждый 
+ элемент набора.
+___________.map() and .each()
+
+The .map() and .each() methods allow developers to apply a function individually to each element in a
+set using a callback function that has two arguments:
+ the current element index 
+ the current DOM element.
+
+The difference between the two is that 
+.map() returns a new object containing the returned values of the callback, whereas 
+.each() will return the original object with the changes performed by the callback included. 
+This means that .each() is chainable, while .map() is not.
+
+The difference comes into play if you need to perform further processing after the call to .map() or
+.each().
+
+$("p,.foo").map(function(index, ele){
+		$(this).append(" "+ele.tagName+" #"+index);
+		})
+		.find("span.foo")                 //не сработает
+				.css({
+				"color":"red",
+				"background":"yellow"
+				});
+
+After execution, the tag names and indices are appended, but the span doesn’t have any style
+changes applied. This happens because the elements are no longer referenced by the object returned
+from .map().
+
+To get the preceding snippet to perform as expected, you must swap out the call to .map() for a call
+to.each():
+$("p,.foo").each(function(index, ele){                                 // OK
+		$(this).append(" "+ele.tagName+" #"+index);
+		})
+		.find("span.foo")                 
+				.css({
+				"color":"red",
+				"background":"yellow"
+				});
+
+each( вызов )
+
+Выполняет функцию для каждого элемента набора. Это означает, что каждый раз, когда выполняется указанная функция (а выполняется она один раз для каждого совпавшего элемента) ключевое слово ‘this’ указывает на конкретный элемент DOM. Помните, что слово ‘this’ НЕ указывает на объект jQuery. Кроме того, запущенная функция передает единственный аргумент, который показывает позицию элемента в составе набора совпавших элементов (integer, отсчет с 0).
+Возврат ‘false’ в рамках каждой функции полностью прерывает цикл по всем элементам (подобно оператору break в обычном цикле).
+Возврат ‘true’ в цикле останавливает текущую итерацию и переходит в начало цикла для следующей итерации (подобно оператору continue в обычном цикле).
+
+Аргументы:
+		вызов	Функция	
+
+Функция, выполняющаяся для каждого совпавшего элемента.
+function callback(index, domElement) {
+  this; // this == domElement
+}
+
+
+////////////// /////// Using Animation and Other Effects
+
+_________________ .show() and .hide()
+When fired without a parameter, they simply add or remove display:none; from the element’s style attribute.
+To make the hiding and showing of elements animated, the duration (in milliseconds) can be
+passed, as well as an optional callback to be fired after the animation is complete.
+ 1000 = 1 second
+
+$("#bar")
+	.css({
+	"background":"yellow",
+	"border":"1px solid black"
+	})
+		.hide(2000,function(){
+		console.log("Animation complete!");
+		});
+
+________________ .fadeIn(), .fadeOut(),.fadeTo(),fadeToggle()
+Вы можете постепенно скрывать и отображать элементы анимировано.
+To fade an element in or out (using opacity), use .fadeIn() and .fadeOut(). When called, these methods
+adjust the opacity of the elements either from 0 to 1 in .fadeIn() or 1 to 0 in .fadeOut(). When an
+element is faded out, display:none; is applied to the element as well. When faded in, display:none; is
+removed from the element if it exists.
+
+Both methods accept optional parameters for the duration of the animation (the default is 400
+milliseconds) and a callback to be fired when the animation completes. The duration has two shortcut
+strings, "fast" and "slow", which translate to 200 and 600 milliseconds, respectively.
+
+$("form")
+	.fadeOut(1000, function(){
+		console.log("Faded out!");
+	})
+	.fadeIn(1000, function(){
+		console.log("Faded in!");
+	});
+
+
+
+
+
+Alternatively, .fadeTo() allows you to specify the opacity to which the element should fade. This
+method requires two arguments: a duration and the opacity to which the element show fade (a number
+between 0 and 1). An optional callback can be passed as the third argument as well.
+Fade the form to 50 percent opacity and log a message using the following:
+
+$("form")
+	.fadeTo(1000, 0.5, function(){
+		console.log("Faded to 50%!");
+	});
+
+
+fadeToggle(duration, callback) – переключатель между In и Out
+
+
+
+_______________ .slideUp(), .slideDown(), and .slideToggle()
+Вы можете плавно изменять высоту выбранных элементов.
+$("p.foo")
+.slideUp(1000, function(){
+console.log("Hidden!");
+})
+.slideDown(1000, function(){
+console.log("Shown!");
+});
+
+To hide an element by reducing its height to 0, .slideUp() is a shortcut method. It animates the
+reduction of the element’s height until it reaches 0 and then sets display:none; to ensure the layout is
+no longer affected by the element. To reverse this, the .slideDown() method removes the display:none;
+and animates the height from 0 back to the original height of the element.
+
+two optional parameters are accepted: the duration and a callback function.
+
+The .slideToggle() method does the same thing as .slideUp() and .slideDown(), but it’s smart
+enough to know if an element is hidden or shown and uses that information to determine which action
+to take.
+__________________ .animate()
+С помощью метода animate() Вы можете создавать на Ваших страницах полноценную анимацию.
+
+$("селектор").animate({стили},скорость,функция_смягчения,функция обр.вызова);
+
+the method is passed a JSON-formatted set of CSS properties to animate as the first argument
+
+Данная функция берет один или несколько CSS-свойств элемента и изменяет их от
+исходного до заданного за N-ое количество итераций (количество итераций зависит от
+указанного времени, но не реже одной итерации в 13мс, если я правильно накопал это
+значение).
+$("#bar").click(function(){
+      $("p").animate({fontSize:30},2000);
+      $("p").animate({top:220},2000);
+      $("p").animate({fontSize:"1em"},2000);
+      $("p").animate({left:320},2000);
+      $("p").animate({top:0,left:0},2000);
+   });
+
+$('#bar').animate({
+		'opacity':0.5,
+		'height':'50px',
+		'width':'250px'
+});
+
+$('#bar').animate({
+	'opacity':'-=0.1',
+	'height':'+=10px'
+});
+
+params – CSS свойства – с этим мы уже познакомились
+duration – скорость анимации – тоже упоминалась ранее, указывается в миллисекундах, или используя ключевые слова "fast" или " slow "
+easing – указываем какую функцию будем использовать для изменения значений
+callback – функция, которая будет вызвана после окончания анимации
+
+Из приведённых параметров нам только easing не встречался ранее – я его берёг на сейчас – этот параметр указывает, какая функция будет использоваться для процесса анимации
+значений. Это могут быть линейные, квадратичные, кубически и любые другие функции.
+«Из коробки» мы можем выбрать лишь между «linear» и «swing»:
+
+Заглянув в код jQuery мы легко найдём соответствующий код:
+linear: function(p) {
+return p;
+},
+swing: function(p) {
+return 0.5 - Math.cos( p*Math.PI ) / 2;
+}
+p – коэффициент прохождения анимации, изменяется от 0 до 1
+
+Но давайте вернёмся к функции animate , которая в качестве параметров может принимать
+ещё один набор параметров, который уже не будет казаться таким простым:
+params – CSS свойства (уже было)
+options – тут целый набор возможностей, часть уже описывалась ранее:
+duration – скорость анимации
+easing – функция («linear» или «swing»)
+complete – функция, которая будет вызвана после окончания анимации
+step – функция, которая будет вызвана на каждом шаге анимации, о ней расскажу чуть ниже
+queue – флаг/параметр очереди, чуть позже опишу подробнее
+specialEasing – хэш в котором можно описать какую easing функцию следует использовать для изменения определённых параметров
+
+
+$("#bar")
+	.css({
+	"background":"yellow",
+	"border":"1px solid black"
+	})
+	.animate({
+	"width":"500px",
+	"height":"100px"
+	},
+	5000,
+	"swing",
+	function(){
+	console.log("Animation complete!");
+	});
+
+
+$("#bar")
+	.css({
+	"background":"yellow",
+	"border":"1px solid black"
+	})
+		.animate({
+		"width":"500px",
+		"height":"100px"
+		},
+			{
+			"duration":5000,
+			"easing":"swing",
+			"complete":function(){
+			console.log("Animation complete!");
+			},
+				"step":function(){
+				console.log("Step completed!");
+				},
+					"queue":true,
+					"specialEasing":{
+					"width":"linear"
+					}
+					});
+
+	The step option allows developers to create a callback function to be fired after each step of the
+animation. This is each time the property is adjusted, so the preceding example ends up outputting quite
+a few log messages of "Step completed!".
+	The queue option tells the animation whether or not it should be added to the current queue, that is,
+the order in which animations have been called. If multiple animations are called and queued, the first animation will complete before the second begins; the second will complete before the third begins, and so on.
+	The specialEasing option allows developers to attach different easing styles to each CSS property
+being animated
+_______________ .delay()
+allows developers to pause a script’s execution for a given number of milliseconds. It provides the ability to run one animation and wait for a bit before
+starting the next animation
+
+$("#bar")
+	.css({
+	"background":"yellow",
+	"border":"1px solid black"
+	})
+		.slideUp(1000, function(){
+		console.log("Animation completed!");
+		})
+			.delay(3000)
+				.slideDown(1000, function(){
+				console.log("Animation completed!");
+				});
+________________ .stop()
+
+To stop an animation
+This method accepts two Boolean argument: 
+	one to determine whether the queue should be cleared and 
+	another to determine whether the animation should jump to the end. Both values default to false.
+
+To start an animation, stop the animation, clear the queue, and jump to the end after 200 steps, use
+the following:
+var count = 0; // Keep track of the current step count
+$("#bar")
+	.css({
+	"background":"yellow",
+	"border":"1px solid black"
+	})
+		.animate({
+		 "width":"500px"
+		 },
+			{
+			 "duration":6000,
+			 "step":function(){
+			  if(count++==200){
+			    $(this).stop(true, true);
+			  }
+			}
+		});
+
+
+
+
+////////////////////   Handling Events  //////////
+Browser Events (События браузера)
+Browser events occur when the browser itself experiences a change or error.
+
+.error() 
+If a browser error occurs, this event is triggered.[Это событие запускается при возникновении ошибок в браузере]
+This method is a shortcut for .on( "error", handler )
+
+// If missing.png is missing, it is replaced by replacement.png
+$( "img" )
+  .error(function() {
+    $( this ).attr( "src", "replacement.png" );
+  })
+  .attr( "src", "missing.png" );
+_______________________________________
+
+.scroll()
+If the document is scrolled, the scroll event is fired. To bind a handler to this event, use the .scroll()
+method:
+$(window)
+.scroll(function(){
+console.log("The window was scrolled!");
+});
+_______________________
+resize()
+
+$( window ).resize(function() {
+  $( "body" ).prepend( "<div>" + $( window ).width() + "</div>" );
+});
+>>>>>>>>>>>>>>>>>>
+
+Handling Document Loading Events (Обработка событий загрузки документа)
+
+.ready()
+
+The .ready() method is used in nearly every jQuery script as a safeguard against the script executing too
+early and, therefore, not performing properly. This method waits for the DOM to be ready for
+manipulation before firing its handler.
+Common practice is to make the entire script a callback function to be fired by the .ready()
+handler:
+$(document).ready(function(){
+// All jQuery functionality here
+});
+___________________________
+.unload()
+
+The unload event is triggered when:
+
+a link to leave the page is clicked
+a new URL is typed in the address bar
+the forward or back buttons are used
+the browser window is closed
+the page is reloaded
+
+$(window).unload(function(){
+    alert("Goodbye!");
+});
+________
+load()
+
+The load() method attaches an event handler to the load event.
+
+The load event occurs when a specified element has been loaded.
+
+This event works with elements associated with a URL (image, script, frame, iframe), and the window object.
+
+Depending on the browser, the load event may not trigger if the image is cached (Firefox and IE).
+
+Note: There is also a jQuery AJAX method called load(). Which one is called, depends on the parameters.
+
+
+$("img").load(function(){
+    alert("Image loaded.");
+});
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>
+Handling Event Attachment (Подключение событий)
+
+.bind() and .unbind()  __________________________________________
+
+$(selector).bind(event,data,function,map)
+
+	event	                  Required. Specifies one or more events to attach to the elements.
+		                  Multiple event values are separated by space. Must be a valid event.
+
+	data	                  Optional. Specifies additional data to pass along to the function
+
+	function	          Required. Specifies the function to run when the event occurs
+
+	map	                  Specifies an event map ({event:function, event:function, ...}) containing one or more 
+		                  events to attach to the elements, and functions to run when the event occurs
+___________________________
+Attach a click event to the <p> element:
+
+$("p").bind("click", function(){
+    alert("The paragraph was clicked.");
+});
+
+.................event map.......
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+    $("button").bind({
+        click:function(){$("p").slideToggle();},
+        mouseover:function(){$("body").css("background-color", "#E9E9E4");},
+        mouseout:function(){$("body").css("background-color", "#FFFFFF");}
+    });
+});
+</script>
+</head>
+<body>
+
+<p>This is a paragraph.</p>
+
+<button>Click me!</button>
+
+</body>
+.....................multiple event.....
+<script>
+$(document).ready(function(){
+    $("p").bind("mouseover mouseout", function(){
+        $("p").toggleClass("intro");
+    });
+});
+</script>
+<style>
+.intro {
+    font-size: 150%;
+    color: red;
+}
+</style>
+
+.............data to function...
+<script>
+function handlerName(e){
+    alert(e.data.msg);
+}
+$(document).ready(function(){
+    $("p").bind("click", {msg: "You just clicked me!"}, handlerName)
+});
+</script>
+
+
+
