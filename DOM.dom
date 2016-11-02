@@ -1,0 +1,914 @@
+
+The DOM is a collection of objects and nodes that make up HTML, XHTML, and XML documents. It is
+platform-and language-independent—this essentially means that developers can use a variety of programming
+languages (such as JavaScript) to access and modify DOM information on multiple platforms (such as web
+browsers) without compatibility issues.
+
+  DOM - это коллекции объектов и узлов, предоставляющая программный интерфейс для доступа к HTML, XHTML, и XML документам.Эта модель не зависит ни от платформы, ни от языка ...//TODO
+
+Согласно DOM-модели, документ является иерархией, деревом. Каждый HTML-тег образует узел дерева с типом «элемент». Вложенные в него теги становятся дочерними узлами. Для представления текста создаются узлы с типом «текст».
+
+DOM – это представление документа в виде дерева объектов, доступное для изменения через JavaScript.
+
+
+
+
+
+
+
+
+______________________________________________________________________________________
+Как видно из рисунка, на вершине стоит window.
+
+У этого объекта двоякая позиция – он с одной стороны является глобальным объектом в JavaScript, с другой – содержит свойства и методы для управления окном браузера, открытия новых окон, например:
+
+ // открыть новое окно/вкладку с URL http://ya.ru
+window.open('http://ya.ru');
+
+Глобальный объект document даёт возможность взаимодействовать с содержимым страницы.
+
+BOM – это объекты для работы с чем угодно, кроме документа.
+Например:
+
+Объект navigator содержит общую информацию о браузере и операционной системе. Особенно примечательны два свойства: navigator.userAgent – содержит информацию о браузере и navigator.platform – содержит информацию о платформе, позволяет различать Windows/Linux/Mac и т.п.
+Объект location содержит информацию о текущем URL страницы и позволяет перенаправить посетителя на новый URL.
+Функции alert/confirm/prompt – тоже входят в BOM.
+Пример использования:
+
+ alert( location.href ); // выведет текущий адрес
+
+
+
+В DOM, все HTML элементы определяются как объекты .//TODO            DOM-узлы – обычные JavaScript-объекты
+
+Свойство innerHTML полезно для получения или замены содержимого HTML-элементов.//TODO
+Заметка	Свойство innerHTML может быть использован, чтобы получить или изменить любой HTML элемент, в том числе <HTML> и <тело>.
+
+Если вы хотите получить доступ к любому элементу в HTML-странице, вы всегда начинаются с доступа к объекту документа.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+https://learn.javascript.ru/traversing-dom
+
+Навигация по DOM-элементам
+
+DOM позволяет делать что угодно с HTML-элементом и его содержимым, но для этого нужно сначала нужный элемент получить.
+Доступ к DOM начинается с объекта document. Из него можно добраться до любых узлов.
+Так выглядят основные ссылки, по которым можно переходить между узлами DOM:
+
+					 document
+                                            ^
+                                            |
+
+				document.documentElement   <HTML>
+                                            ^
+                                            |
+
+				       document.body        (если внутри body)
+                    ---------------------------------------------------
+                                            ^
+                                            |
+
+                                       parentNode
+                                            |
+                      previousSibling  -  <div>  -  nextSibling
+                                        childNodes
+                            firstChild              lastChild
+
+                            
+Самые верхние элементы дерева доступны напрямую из document.
+
+<HTML> = document.documentElement
+Первая точка входа – document.documentElement. Это свойство ссылается на DOM-объект для тега <html>.
+<BODY> = document.body
+Вторая точка входа – document.body, который соответствует тегу <body>.
+В современных браузерах (кроме IE8-) также есть document.head – прямая ссылка на <head>
+Есть одна тонкость: document.body может быть равен null
+Нельзя получить доступ к элементу, которого еще не существует в момент выполнения скрипта.
+В частности, если скрипт находится в <head>, то в нём недоступен document.body.
+В DOM активно используется null
+В мире DOM в качестве значения, обозначающего «нет такого элемента» или «узел не найден», используется не undefined, а null.
+///////////////
+Дети: childNodes, firstChild, lastChild
+
+Здесь и далее мы будем использовать два принципиально разных термина.
+
+Дочерние элементы (или дети) – элементы, которые лежат непосредственно внутри данного. Например, внутри <HTML> обычно лежат <HEAD> и <BODY>.//TODO
+Потомки – все элементы, которые лежат внутри данного, вместе с их детьми, детьми их детей и так далее. То есть, всё поддерево DOM.//TODO
+Псевдо-массив childNodes хранит все дочерние элементы, включая текстовые.
+// пример:testDOM.html
+писок детей – только для чтения!
+Скажем больше – все навигационные свойства, которые перечислены в этой главе – только для чтения. Нельзя просто заменить элемент присвоением childNodes[i] = ....
+
+Изменение DOM осуществляется другими методами, которые мы рассмотрим далее, все навигационные ссылки при этом обновляются автоматически.
+Свойства firstChild и lastChild обеспечивают быстрый доступ к первому и последнему элементу.
+
+При наличии дочерних узлов всегда верно:
+
+elem.childNodes[0] === elem.firstChild
+elem.childNodes[elem.childNodes.length - 1] === elem.lastChil
+
+.............
+
+https://learn.javascript.ru/traversing-dom
+................................
+В этом дереве выделено два типа узлов.(https://learn.javascript.ru/dom-nodes) пример:testDOM.html
+//TODO
+Теги образуют узлы-элементы (element node). Естественным образом одни узлы вложены в другие. Структура дерева образована исключительно за счет них.
+Текст внутри элементов образует текстовые узлы (text node), обозначенные как #text. Текстовый узел содержит исключительно строку текста и не может иметь потомков, то есть он всегда на самом нижнем уровне.
+На рисунке выше синие узлы-элементы можно кликать, при этом их дети будут скрываться-раскрываться.
+
+Обратите внимание на специальные символы в текстовых узлах:
+
+перевод строки: ↵
+пробел: ␣
+Пробелы и переводы строки – это тоже текст, полноправные символы, которые учитываются в DOM.
+
+В частности, в примере выше тег <html> содержит не только узлы-элементы <head> и <body>, но и #text (пробелы, переводы строки) между ними.
+
+Впрочем, как раз на самом верхнем уровне из этого правила есть исключения: пробелы до <head> по стандарту игнорируются, а любое содержимое после </body> не создаёт узла, браузер переносит его внутрь, в конец body.
+
+В остальных случаях всё честно – если пробелы есть в документе, то они есть и в DOM, а если их убрать, то и в DOM их не будет, получится так:
+
+<!DOCTYPE HTML>
+<html><head><title>О лосях</title></head><body>Правда о лосях</body></html>
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+В этом примере тегов уже больше, и даже появился узел нового типа – комментарий.
+
+Казалось бы, зачем комментарий в DOM? На отображение-то он всё равно не влияет. Но так как он есть в HTML – обязан присутствовать в DOM-дереве.
+
+Всё, что есть в HTML, находится и в DOM.
+
+Даже директива <!DOCTYPE...>, которую мы ставим в начале HTML, тоже является DOM-узлом, и находится в дереве DOM непосредственно перед <html>. На иллюстрациях выше этот факт скрыт, поскольку мы с этим узлом работать не будем, он никогда не нужен.
+
+Даже сам объект document, формально, является DOM-узлом, самым-самым корневым.
+
+Всего различают 12 типов узлов, но на практике мы работаем с четырьмя из них:
+
+Документ – точка входа в DOM.
+Элементы – основные строительные блоки.
+Текстовые узлы – содержат, собственно, текст.
+Комментарии – иногда в них можно включить информацию, которая не будет показана, но доступна из JS.
+..................................
+В DOM активно используется null
+В мире DOM в качестве значения, обозначающего «нет такого элемента» или «узел не найден», используется не undefined, а null.
+...........................
+Коллекции – не массивы   //https://learn.javascript.ru/traversing-dom
+DOM-коллекции, такие как childNodes и другие, которые мы увидим далее, не являются JavaScript-массивами.
+ них нет методов массивов, таких как forEach, map, push, pop и других.
+
+ 
+
+
+var elems = document.documentElement.childNodes;
+
+elems.forEach(function(elem) { // нет такого метода!
+  /* ... */
+});
+Именно поэтому childNodes и называют «коллекция» или «псевдомассив».
+
+Можно для перебора коллекции использовать обычный цикл for(var i=0; i<elems.length; i++) ... Но что делать, если уж очень хочется воспользоваться методами массива?
+
+Это возможно, основных варианта два:
+
+Применить метод массива через call/apply:
+var elems = document.documentElement.childNodes;
+
+[].forEach.call(elems, function(elem) {
+  alert( elem ); // HEAD, текст, BODY
+});
+При помощи Array.prototype.slice сделать из коллекции массив.
+
+Обычно вызов arr.slice(a, b) делает новый массив и копирует туда элементы arr с индексами от a до b-1 включительно. Если же вызвать его без аргументов arr.slice(), то он делает новый массив и копирует туда все элементы arr.
+
+Это работает и для коллекции:
+
+ 
+
+var elems = document.documentElement.childNodes;
+elems = Array.prototype.slice.call(elems); // теперь elems - массив
+
+elems.forEach(function(elem) {
+  alert( elem.tagName ); // HEAD, текст, BODY
+});
+Нельзя перебирать коллекцию через for..in
+Ранее мы говорили, что не рекомендуется использовать для перебора массива цикл for..in.
+
+Коллекции – наглядный пример, почему нельзя. Они похожи на массивы, но у них есть свои свойства и методы, которых в массивах нет.
+
+К примеру, код ниже должен перебрать все дочерние элементы <html>. Их, естественно, два: <head> и <body>. Максимум, три, если взять ещё и текст между ними.
+
+Но в примере ниже alert сработает не три, а целых 5 раз!
+
+ var elems = document.documentElement.childNodes;
+
+for (var key in elems) {
+  alert( key ); // 0, 1, 2, length, item
+}
+Цикл for..in выведет не только ожидаемые индексы 0, 1, 2, по которым лежат узлы в коллекции, но и свойство length (в коллекции оно enumerable), а также функцию item(n) – она никогда не используется, возвращает n-й элемент коллекции, проще обратиться по индексу [n].
+
+В реальном коде нам нужны только элементы, мы же будем работать с ними, а служебные свойства – не нужны. Поэтому желательно использовать for(var i=0; i<elems.length; i++).
+
+Соседи и родитель
+
+Доступ к элементам слева и справа данного можно получить по ссылкам previousSibling / nextSibling.
+
+Родитель доступен через parentNode. Если долго идти от одного элемента к другому, то рано или поздно дойдёшь до корня DOM, то есть до document.documentElement, а затем и document.
+
+
+Навигация только по элементам
+
+
+
+
+
+.................................What is the HTML DOM?
+The HTML DOM is a standard object model and programming interface for HTML. It defines:
+
+The HTML elements as objects
+The properties of all HTML elements
+The methods to access all HTML elements
+The events for all HTML elements
+In other words: The HTML DOM is a standard for how to get, change, add, or delete HTML elements.
+
+
+
+
+
+
+...................................................................
+Нахождение HTML Элементы
+	     Method	                                                                   Description
+
+	document.getElementById(id)	                                     Find an element by element id
+	document.getElementsByTagName(name)	                             Find elements by tag name
+	document.getElementsByClassName(name)	                             Find elements by class name
+
+
+пример
+var x = document.getElementById("main");
+var y = x.getElementsByTagName("p");
+
+....................................................................
+Изменение HTML-элементов
+	Method	                                                                             Description
+
+	element.innerHTML =  new html content	                                    Change the inner HTML of an element
+	element.attribute = new value	                                            Change the attribute value of an HTML element
+	element.setAttribute(attribute, value)	                                    Change the attribute value of an HTML element
+	element.style.property = new style	                                    Change the style of an HTML element
+
+....................................................................
+
+Добавление и удаление элементов
+	Method	                                                                     Description
+
+	document.createElement(element)	                                      Create an HTML element
+	document.removeChild(element)	                                      Remove an HTML element
+	document.appendChild(element)	                                      Add an HTML element
+	document.replaceChild(element)	                                      Replace an HTML element
+	document.write(text)	                                              Write into the HTML output stream
+
+........................................................................
+Добавление обработчики событий  (Adding Events Handlers)
+	Method	                                                                 Description
+
+	document.getElementById(id).onclick = function(){code}	                 Adding event handler code to an onclick event
+........................................................................
+Нахождение HTML-объектов
+Finding HTML Elements by HTML Object Collections
+
+	Property	                                          Description	                                                                DOM
+
+	document.anchors	                                Returns all <a> elements that have a name attribute				1
+	document.applets	                                Returns all <applet> elements (Deprecated in HTML5)				1
+	document.baseURI					Returns the absolute base URI of the document					3
+	document.body	        				Returns the <body> element							1
+	document.cookie 					Returns the document's cookie							1
+	document.doctype					Returns the document's doctype							3
+	document.documentElement				Returns the <html> element							3
+	document.documentMode					Returns the mode used by the browser						3
+	document.documentURI					Returns the URI of the document							3
+	document.domain						Returns the domain name of the document server					1
+	document.domConfig					Obsolete. Returns the DOM configuration						3
+	document.embeds						Returns all <embed> elements							3
+	document.forms						Returns all <form> elements							1
+	document.head						Returns the <head> element							3
+	document.images						Returns all <img> elements							1	
+	document.implementation					Returns the DOM implementation							3
+	document.inputEncoding					Returns the document's encoding (character set)					3
+	document.lastModified					Returns the date and time the document was updated				3
+	document.links						Returns all <area> and <a> elements that have a href attribute			1
+	document.readyState					Returns the (loading) status of the document					3
+	document.referrer					Returns the URI of the referrer (the linking document)				1
+	document.scripts					Returns all <script> elements							3
+	document.strictErrorChecking				Returns if error checking is enforced						3
+	document.title						Returns the <title> element							1
+	document.URL						Returns the complete URL of the document             				1
+
+.........................................................................
+
+<!DOCTYPE html>
+<html>
+<body>
+
+<p>Hello World!</p>
+
+<p class="intro">The DOM is very useful.</p>
+<p class="intro">This example demonstrates the <b>querySelectorAll</b> method.</p>
+
+<p id="demo"></p>
+
+<script>
+	var x = document.querySelectorAll("p.intro");
+	document.getElementById("demo").innerHTML = 
+	'The first paragraph (index 0) with class="intro": ' + x[0].innerHTML;
+</script>
+
+</body>
+</html>
+........................
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+//This example finds the form element with id="frm1", in the forms collection, and displays all element values:
+<!DOCTYPE html>
+<html>
+<body>
+
+<form id="frm1" action="form_action.asp">
+  First name: <input type="text" name="fname" value="Donald"><br>
+  Last name: <input type="text" name="lname" value="Duck"><br><br>
+  <input type="submit" value="Submit">
+</form>
+
+<p>Click "Try it" to display the value of each element in the form.</p>
+
+<button onclick="myFunction()">Try it</button>
+
+<p id="demo"></p>
+
+<script>
+function myFunction() {
+    var x = document.forms["frm1"];
+    var text = "";
+    var i;
+    for (i = 0; i < x.length ;i++) {
+        text += x.elements[i].value + "<br>";
+    }
+    document.getElementById("demo").innerHTML = text;
+}
+</script>
+
+</body>
+</html>
+
+
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+...........................................Изменение HTML контента
+
+
+
+In JavaScript, document.write() can be used to write directly to the HTML output stream:
+<!DOCTYPE html>
+<html>
+<body>
+
+<script>
+document.write(Date());
+</script>
+
+</body>
+</html>
+ Never use document.write() after the document is loaded. It will overwrite the document.
+
+
+document.getElementById(id).innerHTML = new HTML  // The innerHTML property can be used to get or change any HTML element, including <html> and <body>.
+..........
+<h1 id="header">Old Header</h1>
+
+<script>
+var element = document.getElementById("header");
+element.innerHTML = "New Header";                          
+</script>
+
+...........................................Изменение значения атрибута   (Changing the Value of an Attribute).........................
+
+document.getElementById(id).attribute=new value
+В этом примере изменяется значение атрибута SRC элемента в <IMG>:
+....
+<img id="myImage" src="smiley.gif">
+
+<script>
+document.getElementById("myImage").src = "landscape.jpg";
+</script>
+
+....................JavaScript HTML DOM - Изменение CSS .................................................................................
+
+Изменение стиля HTML   ( Changing HTML Style )
+
+          document.getElementById(id).style.property=new style
+
+	<p id="p2">Hello World!</p>
+
+	<script>
+	    document.getElementById("p2").style.color = "blue";
+	</script>
+
+........................................... Using EventsИспользование событий ( Using Events ) ........................................
+Events are generated by the browser when "things happen" to HTML elements:
+
+	An element is clicked on.
+	The page has loaded.
+	Input fields are changed.
+
+<h1 id="id1">My Heading 1</h1>
+
+<button type="button" 
+onclick="document.getElementById('id1').style.color = 'red'">
+Click Me!</button>
+
+................................................................................
+Visibility How to make an element invisible. Do you want to show the element or not?
+<!DOCTYPE html>
+<html>
+<body>
+
+<p id="p1"> This is a text.</p>
+
+<input type="button" value="Hide text" onclick="document.getElementById('p1').style.visibility='hidden'"> // скрывает текст
+<input type="button" value="Show text" onclick="document.getElementById('p1').style.visibility='visible'"> // показывает текст
+
+</body>
+</html>
+
+...............................
+
+http://www.w3schools.com/jsref/dom_obj_style.asp
+Style Object Properties
+
+
+
+...........................................JavaScript HTML DOM Animation ...................
+
+Animation Code
+JavaScript animations are done by programming gradual changes in an element's style.
+
+The changes are called by a timer. When the timer interval is small, the animation looks continuous.
+
+The basic code is:
+
+var id = setInterval(frame, 5);
+
+function frame() {
+    if (/* test for finished */) {
+        clearInterval(id);
+    } else {
+        /* code to change the element style */  
+    }
+}
+..........
+
+<!DOCTYPE html>
+<html>
+<style>
+	#container {
+	  width: 400px;
+	  height: 400px;
+	  position: relative;
+	  background: yellow;
+	}
+	#animate {
+	  width: 50px;
+	  height: 50px;
+	  position: absolute;
+	  background-color: red;
+	}
+</style>
+<body>
+
+<p>
+  <button onclick="myMove()">Click Me</button>
+</p>
+
+<div id ="container">
+<div id ="animate"></div>
+</div>
+
+<script>
+	function myMove() {
+	  var elem = document.getElementById("animate");
+	  var pos = 0;
+	  var id = setInterval(frame, 5);
+	  function frame() {
+	    if (pos == 350) {
+	      clearInterval(id);
+	    } else {
+	      pos++;
+	      elem.style.top = pos + 'px';
+	      elem.style.left = pos + 'px';
+	    }
+	  }
+	}
+</script>
+
+</body>
+</html>
+
+...............................................JavaScript HTML DOM Events....................................
+
+Reacting to Events
+A JavaScript can be executed when an event occurs, like when a user clicks on an HTML element.
+
+To execute code when a user clicks on an element, add JavaScript code to an HTML event attribute:
+
+		onclick=JavaScript
+
+Examples of HTML events:
+
+	When a user clicks the mouse
+	When a web page has loaded
+	When an image has been loaded
+	When the mouse moves over an element
+	When an input field is changed
+	When an HTML form is submitted
+	When a user strokes a key
+ex1:
+<h1 onclick="this.innerHTML='Ooops!'">Click on this text!</h1>
+
+ex2:
+<h1 onclick="changeText(this)">Click on this text!</h1>
+
+<script>
+function changeText(id) { 
+    id.innerHTML = "Ooops!";
+}
+</script>
+
+....HTML Event Attributes
+<p>Click the button to display the date.</p>
+
+<button onclick="displayDate()">The time is?</button>
+
+<script>
+function displayDate() {
+    document.getElementById("demo").innerHTML = Date();
+}
+</script>
+
+<p id="demo"></p>
+
+....Assign Events Using the HTML DOM
+<p>Click "Try it" to execute the displayDate() function.</p>
+
+<button id="myBtn">Try it</button>
+
+<p id="demo"></p>
+
+<script>
+document.getElementById("myBtn").onclick = displayDate;
+
+function displayDate() {
+    document.getElementById("demo").innerHTML = Date();
+}
+</script>
+
+....The onload and onunload Events
+The onload and onunload events are triggered when the user enters or leaves the page.
+
+The onload event can be used to check the visitor's browser type and browser version, and load the proper version of the web page based on the information.
+
+The onload and onunload events can be used to deal with cookies.
+
+ex:
+<!DOCTYPE html>
+<html>
+<body onload="checkCookies()">
+
+<p id="demo"></p>
+
+<script>
+function checkCookies() {
+    var text = "";
+    if (navigator.cookieEnabled == true) {
+        text = "Cookies are enabled.";
+    } else {
+        text = "Cookies are not enabled.";
+    }
+    document.getElementById("demo").innerHTML = text;
+}
+</script>
+
+</body>
+</html>
+
+....The onchange Event
+
+The onchange event is often used in combination with validation of input fields.
+
+Below is an example of how to use the onchange. The upperCase() function will be called when a user changes the content of an input field.
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+function myFunction() {
+    var x = document.getElementById("fname");
+    x.value = x.value.toUpperCase();
+}
+</script>
+</head>
+<body>
+
+Enter your name: <input type="text" id="fname" onchange="myFunction()">
+<p>When you leave the input field, a function is triggered which transforms the input text to upper case.</p>
+
+</body>
+</html>
+
+....The onmouseover and onmouseout Events
+The onmouseover and onmouseout events can be used to trigger a function when the user mouses over, or out of, an HTML element:
+
+
+....The onmousedown, onmouseup and onclick Events
+The onmousedown, onmouseup, and onclick events are all parts of a mouse-click. First when a mouse-button is clicked, the onmousedown event is triggered, then, when the mouse-button is released, the onmouseup event is triggered, finally, when the mouse-click is completed, the onclick event is triggered.
+
+<div onmousedown="mDown(this)" onmouseup="mUp(this)"
+style="background-color:#D94A38;width:90px;height:20px;padding:40px;">
+Click Me</div>
+
+<script>
+function mDown(obj) {
+    obj.style.backgroundColor = "#1ec5e5";
+    obj.innerHTML = "Release Me";
+}
+
+function mUp(obj) {
+    obj.style.backgroundColor="#D94A38";
+    obj.innerHTML="Thank You";
+}
+</script>
+
+..................................JavaScript HTML DOM EventListener......
+
+
+
+
+////////////////////////////  DOM    http://www.wisdomweb.ru/HDOM/treenode.php        /////////////////////////////
+DOM состоит из вложенных друг в друга иерархически расположенных объектов, которые называются узлами. Каждый узел в структуре представляет располагающийся на странице HTML элемент.
+
+Используя DOM Вы можете взаимодействовать (считывать, изменять, удалять) с содержимым HTML документов из скриптов.
+
+DOM-узлы – обычные JavaScript-объекты
+
+
+<html>
+
+ <head>
+  <title>HTML DOM</title>
+ </head>
+
+ <body>
+  <h1>HTML DOM.</h1>
+  <p style="color:green">Привет всем.</p>
+ </body>
+
+</html>
+..............
+ domstr.gif (картинка DOM)-  /home/valentin/Документы/КНИГИ/ИЗУЧЕНИЕ/for testing                     
+................
+
+Все прямоугольники изображенные на картинке являются объектами (или узлами). Разным цветом на изображение отмечены узлы разного типа.
+
+Красным цветом отмечен узел Document. Любое обращение к DOM должно начинаться с обращения к данному узлу.
+
+Зеленым цветом отмечены элементные узлы. Для каждого HTML элемента на странице браузер создает соответствующий элементный узел.
+
+Содержимое элементов хранится в текстовых узлах. Текстовые узлы отмечены на нашей схеме синим цветом.
+
+Для каждого атрибута HTML элемента создается атрибутный узел. Атрибутный узел отмечен на схеме розовым цветом.
+
+Обратите внимание: не забывайте, что текст всегда хранится в текстовых узлах, а не является свойством элемента. Т.е. для того, чтобы обратиться к содержимому HTML элемента Вы должны обратиться к свойству его текстового узла.
+
+_________Отношения между узлами
+
+Узлы в объектной структуре связаны друг с другом. Существует несколько специальных терминов для описания отношений между узлами:
+
+Родительский узел (parent node) - родительским узлом по отношению к рассматриваемому объекту является узел, в который вложен рассматриваемый объект. На нашей схеме по отношению к узлам <h1> и <p> <body> является родительским. Для узла <title> родительским является узел <head>.
+
+Узлы-потомки (child node) - узлом-потомком по отношению к рассматриваемому объекту является узел, который вложен в рассматриваемый объект. На нашей схеме по отношению к узлу <body> <h1> и <p> являются потомками. Для узла <head> потомком является <title>.
+
+Узлы-братья (sibling node) - узлы находящиеся на одинаковом уровне вложенности по отношению к их родительскому узлу. На нашей схеме узлами-братьями являются <body> и <head>, <p> и <h1>.
+
+Самый верхний узел в DOM называется корневым. На нашей схеме корневым является <html> (т.к. объект document не является частью DOM).
+
+........Пример
+
+<html>
+<body><h1>HTML DOM.</h1><p style='color:green'>Привет всем.</p>
+<hr />
+<b><script type='text/javascript'>
+/* Прочитаем содержимое элемента p и выведем результат на страницу:
+1. Обратимся к первому элементу потомку body (h1).
+2. Перейдем к следующему узлу брату. (p) 
+3. Обратимся к текстовому узлу соответствующего элемента. 
+4. Обратимся к содержимому текстового узла. */
+document.write(document.body.childNodes[1].nextSibling.childNodes[0].nodeValue);
+</script></b>
+<p><b>Обратите внимание:</b> из-за особеностей работы данного редактора для того, чтобы правильно считать содержимое абзаца мы должны использовать:
+document.body.childNodes[1] вместо document.body.childNodes[0].</p>
+</body>
+</html>
+
+......................
+
+_________________Обращение к элементам
+
+Условно можно сказать что обращаться к элементам в DOM можно двумя различными способами:
+
+Использовать последовательное перемещение по объектной структуре до нахождения необходимого элемента.
+Использовать прямое обращение к элементу по его идентификатору или имени тэга.
+Второй способ безусловно проще и удобнее и в повседневной практике всегда используют именно его. Однако в учебных целях полезно разобрать оба способа.
+
+........Последовательное перемещение
+
+Вернемся к DOM из второй главы и представим, что нам нужно прочитать текстовое содержимое ее элемента p.
+
+Красной стрелкой и черными кружками с цифрами отмечено как последовательно будет выглядеть перемещение по объектной структуре:
+
+
+dommove.gif (картинка DOM)-  /home/valentin/Документы/КНИГИ/ИЗУЧЕНИЕ/for testing          
+
+
+Разберем процесс перемещения подробнее:
+
+Обращаемся к объекту document, в котором находится DOM. Код на данном шаге имеет вид: document.
+Обращаемся к корневому узлу (т.е. тэгу <html>) который находится внутри объекта document. Код на данном шаге имеет вид: document.documentElement.
+Обращаемся ко второму потомку (так как в коде страницы body располагается после head) корневого узла. Код на данном этапе будет иметь вид: document.documentElement.childNodes[1]. Вы также можете напрямую обратится к body используя следующий код (далее будем полагать что Вы выбрали этот вариант): document.body.
+Обращаемся ко второму потомку body (элемент p задан в коде после h1). Код на данном этапе будет иметь вид: document.body.childNodes[1].
+Обращаемся к текстовому узлу который является первым потомком p и узнаем значение его свойства. Код на данном этапе будет иметь вид: document.body.childNodes[1].childNodes[0].nodeValue.
+
+//Выведем содержимое абзаца на страницу
+document.write(document.body.childNodes[1].childNodes[0].nodeValue);
+
+
+...............Прямое обращение к элементу
+
+С помощью метода getElementById Вы можете напрямую обращаться к элементам по их идентификатору (атрибут id), а с помощью свойства innerHTML можно быстро считывать их текстовое содержимое.
+
+//Выведем содержимое второго абзаца на страницу
+document.write(document.getElementById("par").innerHTML);
+
+-----------------------------DOM Манипуляции
+
+Для каждого элемента на странице браузер создает в DOM элементный узел.
+
+Каждый элементный узел имеет набор предопределенных свойств и методов. С помощью этих свойств и методов Вы можете производить различные манипуляции над содержимым элементных узлов объектной структуры.
+
+...................Свойства
+
+С помощью свойства innerHTML Вы можете получить доступ к содержимому текстового узла DOM объекта.
+
+function change(){
+   document.getElementById("par").innerHTML="Я изучаю HTML DOM на 
+   <b>wisdomweb.ru</b>!";
+}
+function changeback(){
+   document.getElementById("par").innerHTML="Я изучаю JavaScript.";
+}
+
+С помощью свойства nodeName Вы можете узнать имя узла.
+
+//Узнаем имя элемента с id=par и сохраним результат в переменную x
+x=document.getElementById("par").nodeName;
+//Выведим результат на страницу
+document.write(x+"<br />");
+//Узнаем имя элемента с id=header и сохраним результат в переменную y
+y=document.getElementById("header").nodeName;
+//Выведим результат на страницу
+document.write(y);
+
+
+С помощью свойства nodeValue Вы можете узнать значения узла.
+
+Пример
+//Узнаем значение свойства первого потомка элемента с id=par и сохраним результат в x
+x=document.getElementById("par").childNodes[0].nodeValue;
+//Выведим результат на страницу
+document.write(x+"<br />");
+
+
+С помощью свойства parentNode Вы можете обратиться к родительскому узлу элемента.
+
+Пример
+//Узнаем имя родительского узла элемента с id=par и сохраним результат в x
+x=document.getElementById("par").parentNode.nodeName;
+//Выведим результат на страницу
+document.write(x+"<br />");
+
+С помощью свойства childNodes Вы можете обратиться к узлам потомкам элемента.
+
+Для того, чтобы обратиться к первому узлу потомку используйте childNodes[0], ко второму childNodes[1] и т.д.
+
+Пример
+//Узнаем свойство первого потомка элемента с id=par и запишем результат в x
+x=document.getElementById("par").childNodes[0].nodeValue;
+//Выведим результат на страницу
+document.write(x+"<br />");
+
+C помощью свойства attributes Вы можете обратиться к атрибутам узла.
+
+Нумерация атрибутов идет в обратном порядке. Для того, чтобы обратиться к последнему атрибуту используйте attributes[0], к предпоследнему attributes[1] и т.д.
+
+Пример
+//Узнаем значение первого атрибута элемента и запишем результат в x
+x=document.getElementById("ww").attributes[0].nodeValue;
+//Выведим результат на страницу
+document.write(x+"<br />");
+
+С помощью свойства nodeType Вы можете узнать тип узла.
+
+Элементный узел имеет тип 1, атрибутный узел имеет тип 2, текстовый узел имеет тип 3.
+
+Пример
+//Узнаем тип узла и запишем результат в x
+x=document.getElementById("par").nodeType;
+//Выведим результат на страницу
+document.write(x+"<br />");
+.........................
+http://www.wisdomweb.ru/HDOMd/index.php                HTML DOM Справочник
+................................
+
+Создание неочевидных потомков
+
+Если при разборе страницы браузер встречает символ без тэгов, он создает для него в DOM текстовый узел.
+
+При редактировании страницы новые тэги переносятся на новую строку, каждый такой перенос осуществляется с помощью символа перевода строки (нажатия клавиши enter). Так как символ перевода строки является символом без тэга, для него будет создан пустой текстовый узел.
+
+Пример
+/* Итак мы хотим вывести содержимое тэга p на страницу кажется, что код написан 
+верно, но на страницу выведется undefined */
+document.write(document.body.childNodes[0].innerHTML+"<br />");
+/* Дело в том, что тэг p идущий после body был перенесен на новую строку. 
+Соответственно первыйузел-потомок body - это текстовый узел созданный для 
+символа перевода строки, а элемент p является вторым потомком. В этом 
+мы можем убедится выведя имя первого элемента потомка body */
+document.write(document.body.childNodes[0].nodeName+"<br />");
+/* А так мы можем вывести содержимое тэга p на страницу и имя 
+соответствующего узла */
+document.write(document.body.childNodes[1].innerHTML+"<br />");
+document.write(document.body.childNodes[1].nodeName);
+
+___________Методы HTML DOM      http://www.wisdomweb.ru/HDOM/method.php
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
