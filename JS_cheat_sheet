@@ -1,0 +1,907 @@
+
+
+Директива выглядит как строка "use strict"; или 'use strict'; и ставится в начале скрипта.
+
+Есть 5 «примитивных» типов: number, string, boolean, null, undefined и 6-й тип – объекты object
+Значение null не является «ссылкой на нулевой адрес/объект» или чем-то подобным. Это просто специальное значение.
+представляющим нулевое или «пустое» значение, то есть, когда нет никакого объектного значения
+
+Значение undefined, как и null, образует свой собственный тип, состоящий из одного этого значения. 
+Оно имеет смысл «значение не присвоено».
+	var x;
+	alert( x ); // выведет "undefined"
+
+////////////////////////////////////////////////////
+Наследование реализовано через механизм прототипов, свойства и методы могут быть добавлены в любой объект динамически.
+/////////////////////////////////////
+• Recall that C is a compiled language, meaning that your code gets turned into 0s and
+1s that a computer can understand before you run it.
+
+• PHP, on the other hand, is an interpreted language, meaning that a program called an
+interpreter is figuring out what your code means line by line as you run it and directing
+the computer to do the correct actions.
+
+• We also introduced HTML, which isn’t a programming language at all - it’s a markup
+language, so it doesn’t have loops, conditions, etc, just formatting and ways of
+representing the content of a page.
+
+• CSS is also not a programming language, and even more aesthetically oriented.
+
+• SQL is in fact a programming language (albeit one specifically tailored to database
+manipulations), and you can write entire procedures (functions) in SQL, although in this
+course we stick to a small (but very useful) subset of what SQL can do.
+
+• And now we’ll formally introduce JavaScript, which, like PHP, is an interpreted
+language.
+# Unlike PHP, JavaScript can (and usually does) run client-side - that is, it’s not being
+interpreted by your web server and served up to your site’s users (server-side, like
+PHP), it’s interpreted by the browser on your user’s computer.
+
+# It is possible to write server-side JavaScript (and use it as the backend of any
+application you might otherwise write in PHP or some other language), using
+frameworks like Node.js, but in this course we’re going to focus on client-side
+JavaScript.
+
+• There’s no main function - you just start writing your code.
+
+for (var key in object)
+{
+// do this with object[key]
+}
+# We’ll refer to this as a for-in loop, sort of analogous to PHP foreach loop.
+
+# All this means is if we’ve got an object (which we’ll describe more in a moment), we
+can iterate over the key-value pairs inside, with JavaScript grabbing a new key from
+the object each iteration. We can get at the value associated with that key by treating
+the object as an associative array and indexing into it by key as object[key] .
+
+• Arrays are declared similarly to PHP:
+
+var numbers = [4, 8, 15, 16, 23, 42];
+
+# JavaScript, like PHP, is loosely typed, so we as the programmer don’t need to
+specify our variable types.
+
+• More generally, we can declare variables like so:
+var s = "hello, world";
+
+• And then we have objects, with keys and values, not unlike PHP’s associative arrays
+(although with some differences):
+
+var quote = {symbol: "FB", price: 101.53};
+
+# This object has two keys ( symbol and price ), each with a value.
+# Contrast this with the syntax for an associative array in PHP:
+
+$quote = ["symbol" => "FB", "price" => "101.53"];
+
+# These are just syntactic differences - the key-value pairs work exactly the same
+way.
+
+# Just like in PHP, we could access the value associated with symbol
+via $quote["symbol"] , we can do the same in JavaScript with
+quote["symbol"] .
+
+JSON
+
+We could have used any of several different text formats to store the configuration
+information, but JSON has some advantages.
+
+	{
+	  "database": {
+		"host": "localhost",
+		"name": "pset7",
+		"username": "TODO",
+		"password":	"TODO"
+	  }
+	}
+
+# This is an object in JavaScript - there’s one key-value pair, where the key is
+database , and the value is itself another object (with keys host , name ,
+username , and password ).
+• JSON is a standard format for storing data - a little nitpicky (a JSON file won’t be
+readable if we omit a comma or quotes, etc), but widely used and pretty flexible.
+
+Document Object Model
+
+<!DOCTYPE html>
+<html>
+  <head>
+	<script>
+		function greet()
+		{
+			alert('hello, ' + document.getElementById('name').value + '!');
+		}
+	</script>
+	<title>dom-0</title>
+  </head>
+  <body>
+	<form id="demo" onsubmit="greet(); return false;">
+		<input id="name" placeholder="Name" type="text"/>
+		<input type="submit"/>
+	</form>
+  </body>
+</html>
+
+# First looking just at the HTML, we can see that our <form> tag now has an attribute
+called onsubmit with the value "greet(); return false;" .
+
+# This quoted string is in JavaScript, calling a function called greet , which is defined
+up above.
+
+# greet calls the JavaScript function alert , which pops up that ugly alert
+window we saw.
+
+# We’re using + to concatenate strings here, just like we used . in PHP (and
+again, MUCH easier here than in C!).
+
+# In
+between
+the
+string
+parts
+we
+can
+see,
+we
+have
+document.getElementById('name').value . Let’s break this down some
+more.
+• Remember our DOM tree above? document here refers to the root node of
+the tree, which is a special global variable in JavaScript.
+• We have a function called getElementById that lets us traverse the DOM
+tree to find the element with the specified id attribute, here name .
+# Note that this function is inside the document object, which is why we call
+it with this dot notation (not unlike getting an element of a C struct).
+# This function hands back the node of the tree with the id we asked for,
+and then we can get various properties of that node - one of which is called
+value .
+• So at the end of all of this, we get back the string that the user typed in the box.
+# So why, after greet(); , do we return false; in the onsubmit here?
+# We didn’t specify an action for this form, but by default, that means the form
+submits to this same page ( dom-0.html ).
+# If we delete the return false; , reload the page, open up our Network tab
+and click "Preserve log", and then submit the form again, now we can see that the
+form is submitting back to this same URL and sending another HTTP request.
+# This is not what we want to do, so we return false to short-circuit the
+browser’s default behavior and avoid reloading the page.
+
+• Let’s look at a marginally better version of this code, in dom-1.html :
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>dom-1</title>
+</head>
+<body>
+	<form id="demo">
+		<input id="name" placeholder="Name" type="text"/>
+		<input type="submit"/>
+	</form>
+	<script>
+		document.getElementById('demo').onsubmit = function() {
+			alert('hello, ' + document.getElementById('name').value +
+				'!');
+			return false;
+		};
+	</script>
+</body>
+</html>
+
+# This implementation behaves exactly the same way, but rather than having an
+onsubmit attribute that calls a function in the midst of our HTML, we have all of
+our JavaScript code inside our <script> element.
+# This is much more maintainable, because it’s easier to find the code to change
+it if it’s all in one place!
+# We’re grabbing the form element using its id , once again with
+document.getElementById , and we’re directly assigning its onsubmit
+attribute within our script, which we know is a valid event listener for a form element.
+# The value of the onsubmit property needs to be a function, but rather than
+name this function, write it up separately, and then call it, we’re using a feature of
+JavaScript called an anonymous function here (PHP and C actually also have
+this feature - C via "function pointers" - but we never really went into them, and
+they’re more commonly used in JavaScript).
+
+• What more can we do to improve our code? Let’s see in dom-2.html
+
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+		<script>
+			$(document).ready(function() {
+				$('#demo').submit(function(event) {
+					alert('hello, ' + $('#name').val() + '!');
+					event.preventDefault();
+				});
+			});
+		</script>
+		<title>dom-2</title>
+	</head>
+	<body>
+		<form id="demo">
+			<input id="name" placeholder="Name" type="text"/>
+			<input type="submit"/>
+		</form>
+	</body>
+	</html>
+
+# Now we’re incorporating a very common JavaScript library called
+jQuery, which takes normally very verbose JavaScript code like
+document.getElementById('demo') and turns it into $('#demo') .
+# This is the equivalent way of doing the exact same thing as before in jQuery as
+opposed to native JavaScript.
+# This code roughly means "When the document is ready, set this anonymous function
+as the submit handler for the element called 'demo', which will pop up an alert and
+then return false."
+
+# Rather than actually return
+false; , here we have the line
+event.preventDefault(); , which has the same effect - short-circuiting the
+browser’s default behavior of submitting the form and reloading the page.
+4
+• Let’s use this for something a little more useful in form-0.html . We can set up a
+form, e.g. for the Frosh IMs website.
+# When we submit the form, whether we cooperate and type a real email address,
+matching passwords, and check the box, or not, this takes us to a page saying, "You
+are registered! (Well, not really.)".
+# We can certainly check for correct input in PHP, but then the request has to go all
+the way to the server just to tell the user they did something wrong and have to try
+again - it would be better if we could give the user more immediate feedback.
+
+• In form-1.html , we use JavaScript to perform client-side validation, and actually
+check for correct input before the request can be sent to the server:
+
+<!DOCTYPE html>
+<html>
+ <head>
+	<title>form-1</title>
+ </head>
+ <body>
+	<form action="register.php" id="registration" method="get">
+
+		Email: <input name="email" type="text"/>
+		<br/>
+		Password: <input name="password" type="password"/>
+		<br/>
+		Password (again): <input name="confirmation" type="password"/>
+		<br/>
+		I agree to the terms and
+		conditions: <input name="agreement" type="checkbox"/>
+		<br/><br/>
+		<input type="submit" value="Register"/>
+	</form>
+	<script>
+		var form = document.getElementById('registration');
+		// onsubmit
+		form.onsubmit = function() {
+		        // validate email
+			if (form.email.value == '') //если поле формы, имя которого email, имеет значение от пользователя, равный...unquote
+			{
+				alert('You must provide your email address!');
+				return false;
+			}
+			// validate password
+			else if (form.password.value == '')
+			{
+				alert('You must provide a password!');
+				return false;
+			}
+			// validate confirmation
+			else if (form.password.value != form.confirmation.value)
+			{
+				alert('Passwords do not match!');
+				return false;
+
+			}
+			else if (!form.agreement.checked)
+			{
+				alert('You must agree to the terms and conditions!');
+				return false;
+
+			}
+			return true;
+		};
+	</script>
+ </body>
+</html>
+
+# Now we detect when passwords do not match, or when the user did not agree to
+the terms and conditions without submitting the form.
+# This decreases server load, because it prevents erroneous input from wasting
+your server’s time just to say that the input is wrong.
+# Especially on a mobile device, there can be significant latency to a call to the
+server, so it can be faster to validate input on the client side.
+# Inside our <script> tag, we’re finding the form element using
+document.getElementById , and then registering an event listener with an
+anonymous function that checks various input.
+# Even if some of the syntax looks a little unfamiliar, the basic logic here is the
+same as what we might have used in C or PHP.
+# Note that the checkbox input type has a property called checked with a
+Boolean value indicating whether the box is checked or not.
+# If everything went well, we return true; and the form is submitted to the server;
+otherwise, if the user typed something wrong, we return false; and prevent
+submission of the form.
+
+.............................
+anonymous functions  // не имеет имя 
+callbacks // вызывается ф-ция (без имени?) когда событие произошло
+..................
+Ajax, or Asynchronous JavaScript And XML
+
+<!DOCTYPE html>
+<html>
+  <head>
+        <script>
+// toggles visibility of greeting
+function blink()
+{
+var div = document.getElementById('greeting'); // глобальная переменная document
+if(div.style.visibility == "hidden")      // объекты имеют свойства
+{
+div.style.visibility == "visible";
+}
+else
+{
+div.style.visibility == "hidden";
+}
+
+
+}
+//blinl every 500ms
+window.setInterval(blink, 500); // глобальная переменная window имеет свойство setInterval которая выз. ф-цию blink каждые полсекунды
+        </script>
+	<style>
+              #greeting{
+		font-size:95pt;
+		margin:240px;
+		text-align:center;
+
+              }
+        </style>
+	<title>blink</title>
+  </head>
+  <body>
+	<div id = "greeting"> hello,world </div>
+	
+  </body>
+</html>
+
+
+
+
+
+////////////////////////////////////
+////////////////////////////////////////////////////
+????????????????????????????????????????????????????????
+Объект String имеет методы и свойства:
+
+String Properties:
+	Property	                   Description
+
+	constructor	               Returns the string's constructor function
+	length	                       Returns the length of a string
+	prototype	               Allows you to add properties and methods to an object
+
+String Methods:
+
+Method	                     Description
+
+charAt()		Returns the character at the specified index (position)
+charCodeAt()		Returns the Unicode of the character at the specified index
+concat()		Joins two or more strings, and returns a new joined strings
+endsWith()		Checks whether a string ends with specified string/characters
+fromCharCode()		Converts Unicode values to characters
+includes()		Checks whether a string contains the specified string/characters
+indexOf()		Returns the position of the first found occurrence of a specified value in a string
+lastIndexOf()		Returns the position of the last found occurrence of a specified value in a string
+localeCompare()		Compares two strings in the current locale
+match()	        	Searches a string for a match against a regular expression, and returns the matches
+repeat()		Returns a new string with a specified number of copies of an existing string
+replace()		Searches a string for a specified value, or a regular expression, and returns a new string where the specified values are replaced
+search()		Searches a string for a specified value, or regular expression, and returns the position of the match
+slice()	        	Extracts a part of a string and returns a new string
+split()   		Splits a string into an array of substrings
+startsWith()		Checks whether a string begins with specified characters
+substr()		Extracts the characters from a string, beginning at a specified start position, and through the specified number of character
+substring()		Extracts the characters from a string, between two specified indices
+toLocaleLowerCase()	Converts a string to lowercase letters, according to the host's locale
+toLocaleUpperCase()	Converts a string to uppercase letters, according to the host's locale
+toLowerCase()		Converts a string to lowercase letters
+toString()		Returns the value of a String object
+toUpperCase()		Converts a string to uppercase letters
+trim()	        	Removes whitespace from both ends of a string
+valueOf()		Returns the primitive value of a String object
+
+Примеры:
+var txt = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+var sln = txt.length;           //26
+
+var txt = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+document.getElementById("demo").innerHTML = txt.length; // html doc. show 26
+
+
+var y = new String("John");             constructor
+
+var str = "Please locate where 'locate' occurs!";
+var pos = str.indexOf("locate");
+
+??????????????????????????????????????????????????????/
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+https://www.youtube.com/watch?v=PMfcsYzj-9M&app=desktop
+        // Primitive types
+        typeof  undefined         // "Undefined"    
+        typeof  3.14              // "Number"
+	typeof  true              // "Boolean"
+	typeof  "foo"             // "String"
+	typeof  {bar:"baz"}       // "Object"
+	typeof  null              // "NULL"  "object"
+        // Special object
+	typeof  function f(){}    // "Function" 
+        typeof  ["dff",43]        // "Array" 
+        typeof  /fgju/            // "RegExp"  
+
+        x = null;          // спец. значение (само себе тип) «пустое» значение
+	x = undefined;     // спец. значение (само себе тип)  «значение не присвоено»
+
+	var myObject = {
+		a: undefined,     //properties
+		b: null,
+		c: true,
+		d: "foo"
+		e: 3.14159
+		f: function bar(){...}
+		g: {h: "baz"}
+	};
+                ^       ^
+               keys   values
+..................................
+var number1, number2; // оба undefined
+
+var object1, object2;  // оба undefined
+
+object1 = {
+     a:3.14
+};
+
+object2 = object1;// still one object, but copying reference
+
+object2.a = 42; //object1 get changed as well
+object2.a  is 42 ,  object1.a  is 42
+.....................................
+var myObject = {
+		a: "foo",     
+		b: "bar",
+		c: "baz"
+		
+	};
+
+myObject.x; // undefined
+
+myObject.c =  undefined;
+
+                myObject 
+		a: "foo",     
+		b: "bar",
+		c: undefined
+		
+	
+
+delete myObject.c;
+
+                myObject 
+		a: "foo",     
+		b: "bar"
+
+...........................................
+function myFunction(a, b){
+return 42;
+};
+
+myFunction[]        //creates an object that has 3 propeties
+name   "myFunction"
+length  2          //number of arguments
+prototype ...
+
+
+myFunction.foo = "bar";
+
+myFunction[]      
+name   "myFunction"
+length  2          
+prototype ...
+foo     "bar"
+
+
+
+var function2 = myFunction; // reference
+function2(); // 42
+.......................................................
+
+var myObject = {
+    get: function myMethod(){
+         return this.val;
+    },
+    val: 42
+};
+
+
+   myObject
+ get myMethod[]   ->     myMethod[]
+ val 42                name "myMethod"
+                       length
+                       prototype ...
+                       
+myObject.get();  //42
+
+.......................................
+function myMethod(){
+         return this.val;
+    }
+
+
+var object1 = {
+    get: myMethod,
+    val: 42
+};
+
+
+var object2 = {
+    get: myMethod,
+    val: 3.14159
+};
+
+object1.get(); // 42
+object2.get(); //  3.14159
+myMethod() // ?? undefined if using strict mode  //careful
+myMethod.call(object1); // 42
+
+........................................
+Prototypal Inheritance     JS
+
+var parent = {
+   get: function fn(){
+     return this.val;
+   },
+   val: 42
+};
+
+                       fn[]
+                       name "myMethod"
+                       length 0
+                       prototype ...
+
+   parent          //this
+ get myMethod[]         
+  val 42
+ [[Object]]
+
+   child           //this
+ [[Prototype]]
+
+  grandchild       //this
+ [[Prototype]]
+                      
+                   
+
+var child = Object.create(parent);//наследует от parent
+child.val = 3.14159;
+
+child           //this
+val 3.14159
+[[Prototype]]
+
+var grandchild = Object.create(child);//наследует от child
+
+parent.get();  // 42
+child.get();  // 3.14159
+grandchild.get();  // 3.14159
+
+Every single object has a prototype _____________________________________________
+
+var myObject = {};
+function myFunction() {};
+
+var noPrototype = Object.create(null);
+_____________________________________________________
+ myFunction[]      
+name      "myFunction"
+length     2          
+prototype  ...
+foo        "bar"
+ [[Prototype]]
+____________________
+ noPrototype
+   null
+___________________
+  myObject
+ [[Prototype]]
+___________________
+        Object.prototype
+constructor           ...
+toString              toString[]
+toLocaleString        toLocaleString[]
+valueOf               valueOf[]
+hasOwnProperty        hasOwnProperty[]
+isPrototypeOf         isPrototypeOf[]
+propertyIsEnumerable  propertyIsEnumerable[]
+             null
+_______________________________________________
+
+       Function.prototype
+constructor           ...
+toString              toString[]
+toSource              toSource[]
+apply                 apply[]
+call                  call[]
+bind                  bind[]
+isGenerator           isGenerator[]
+name                  ""
+length                0  
+           [[Prototype]]
+
+________________________________________
+Polymorphism & Method Overriding
+
+var answer = {
+   get: function fn1(){
+     return this.val;
+   },
+   val: 42
+};
+
+var firmAnswer = Object.create(answer);
+firmAnswer.get = function fn2(){
+     return this.val + "!!";
+   };
+
+answer.get();//42
+firmAnswer.get();//"42!!"
+//////////////////////////////////////
+
+......Classical model...................
+
+var AnswerPrototype = {
+
+constructor: function fn0(value){
+     this._val = value;
+   }
+   get: function fn1(){
+     return this._val;
+   }
+ 
+};
+
+
+var lifeAnswer = Object.create(AnswerPrototype);
+
+lifeAnswer.constructor(42);
+lifeAnswer.get(); // 42
+
+var desserAnswer = Object.create(AnswerPrototype);
+
+desserAnswer.constructor(3.14159);
+desserAnswer.get(); // 3.14159
+
+_____________________________________
+
+function Answer(value){
+     this._val = value;
+   }
+
+Answer.prototype.get = function fn1(){
+     return this._val;
+   }
+
+var lifeAnswer = new Answer(42);
+lifeAnswer.get(); // 42
+
+var desserAnswer = new Answer( 3.14159);
+desserAnswer.get(); // 3.14159
+
+function FirmAnswer(value){
+    Answer.call(this, value);
+   }
+
+FirmAnswer.prototype = 
+        Object.create(Answer.prototype);
+
+FirmAnswer.prototype.constructor=FirmAnswer;
+
+FirmAnswer.prototype.get = function fn2(){
+     return  Answer.prototype.get.call(this)+"!!";
+   }
+
+ var luckyAnswer = new FirmAnswer(7);
+luckyAnswer.get(); // "7!!"
+
+
+ var magicAnswer = new FirmAnswer(3);
+magicAnswer.get(); // "3!!"
+
+_________ instanceof __________
+
+
+lifeAnswer instanceof Answer; // true
+lifeAnswer instanceof FirmAnswer; //false
+
+......... Future ............
+class Answer{
+	constructor(value){
+	     this._val = value;
+	}
+	get(){
+	     return this._val;
+	}
+}
+var lifeAnswer = new Answer(42);
+lifeAnswer.get(); // 42
+
+class FirmAnswer extends Answer{
+       constructor(value){
+	super(value);
+	}
+	get(){
+	     return super(value) + "!!";
+	}
+
+}
+
+var luckyAnswer = new FirmAnswer(7);
+luckyAnswer.get(); // "7!!"
+
+
+//////////////////////////
+Определение классовEDIT
+На самом деле классы — это функции. Поэтому так же, как вы определяете функции (function expressions и function declarations), вы можете определять и классы с помощью:
+
+class expressions
+class declarations
+Объявление класса
+
+Первый способ определения класса — объявление класса (class declaration). Для этого необходимо воспользоваться ключевым словом class и указать имя класса (в примере — «Polygon»).
+
+class Polygon {
+  constructor(height, width) {
+    this.height = height;
+    this.width = width;
+  }
+}
+Подъём (hoisting)
+
+Разница между объявлением функции (function declaration) и объявлением класса (class declaration) в том, что объявление функции совершает подъём (hoisted), в то время как объявление класса — нет. Поэтому вначале необходимо объявить ваш класс и только затем работать с ним, а код же вроде следующего выбросит ошибку ReferenceError:
+
+var p = new Polygon(); // ReferenceError
+
+class Polygon {}
+Выражение класса
+
+Второй способ определения класса — выражение класса (class expression). С помощью него можно создавать именованные и безымянные классы. В первом случае имя класса находится в локальной области видимости класса.
+
+// безымянный
+var Polygon = class {
+  constructor(height, width) {
+    this.height = height;
+    this.width = width;
+  }
+};
+
+// именованный
+var Polygon = class Polygon {
+  constructor(height, width) {
+    this.height = height;
+    this.width = width;
+  }
+};
+Тело класса и метод определенияEDIT
+Тело класса — это часть кода, находящаяся в фигурных скобках ({ }). Здесь вы можете объявлять члены класса, такие как методы и конструкторы.
+
+Строгий режим
+
+Тела объявлений классов и выражений классов выполняются в строгом режиме (strict mode).
+
+Constructor
+
+Метод конструктор — специальный метод, необходимый для создания и инициализации объектов с помощью класса. В классе может быть только один конструктор. Ошибка SyntaxError будет выброшена, если класс будет содержать более одного метода конструктора.
+
+Конструктор может использовать ключевое слово super для вызова конструктора родительского класса.
+
+Прототипные методы
+
+См. также определение методов.
+
+class Polygon {
+  constructor(height, width) {
+    this.height = height;
+    this.width = width;
+  }
+  
+  get area() {
+    return this.calcArea();
+  }
+
+  calcArea() {
+    return this.height * this.width;
+  }
+}
+
+const square = new Polygon(10, 10);
+
+console.log(square.area);
+
+Статические методы
+
+Ключевое слово static определяет для класса статический метод. Статические методы вызываются без инстанцирования класса и не могут быть вызваны у экземпляров класса. Статические методы часто используются для создания служебных функций для приложения.
+
+class Point {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    static distance(a, b) {
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+
+        return Math.sqrt(dx*dx + dy*dy);
+    }
+}
+
+const p1 = new Point(5, 5);
+const p2 = new Point(10, 10);
+
+console.log(Point.distance(p1, p2));
+Наследование классовEDIT
+Ключевое слово extends используется в объявлениях классов и выражениях классов для создания класса дочернего относительно другого класса.
+
+class Animal { 
+  constructor(name) {
+    this.name = name;
+  }
+  
+  speak() {
+    console.log(this.name + ' makes a noise.');
+  }
+}
+
+class Dog extends Animal {
+  speak() {
+    console.log(this.name + ' barks.');
+  }
+}
+Sub classing built-in objectsEDIT
+…
+
+Обращения к родительскому классуEDIT
+Ключевое слово super используется для вызова функций на родителе объекта.
+
+class Cat { 
+  constructor(name) {
+    this.name = name;
+  }
+  
+  speak() {
+    console.log(this.name + ' makes a noise.');
+  }
+}
+
+class Lion extends Cat {
+  speak() {
+    super.speak();
+    console.log(this.name + ' roars.');
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
