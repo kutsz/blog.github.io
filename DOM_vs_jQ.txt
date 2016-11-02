@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DOM vs jQ</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script  src="jquery-3.0.0.min.js"></script>
+<script src="js.js"></script>
+</head>
+ <body>
+
+	<div id="block"> DIV </div>
+		<ul>
+		    <li id="text" >Красный текст</li>
+
+		    <li id="background">Заливка синим</li>
+
+		    <li id="frame">Желтая рамка</li>
+
+		    <li id="borderRadius">Закругление рамки</li>
+
+                    <li id="tog"> TOGGLE </li>
+		</ul>
+
+	<button type="button" onclick="alert('Hello World!')">Click Me!</button> <br>
+	<button type="button" id="but">Click</button>
+<script>
+$(document).ready(function(){
+    $("button#but").click(function(){
+        $("li#tog").toggle();
+    });
+    
+});
+
+var div = document.createElement('div'); // создаем эл.
+document.body.appendChild(div);     // добавлям в body
+
+$('body').append('<div>');          // тоже 
+$('div').append('<p>This is the text in new element.<p>');
+
+var p = document.createElement("p");
+document.body.appendChild(p);
+p.innerHTML="hello";                 // вставл. текст
+
+var url = document.URL;
+document.write(url);
+
+window.open();
+$( window ).load(function() {
+        console.log( "window loaded" );
+    });
+</script>
+
+
+
+
+ </body>
+</html>
+/////////////////////////////////////////////
+
+   <!DOCTYPE html>                             'узел Document'              (document)
+                                                                               |
+  <html>                                                                    [html]-'элементный узел'
+    <head>                                                                   /  \
+       <title>Greeting</title>                         'элементный узел'-[head] [body]-'элементный узел' 
+    </head>                                                                |      |  \  
+       <body>                                         'элементный узел'-[title]  [p]  [h1]
+         <h1> </h1>                                                        |      |\  
+         <p style="color:blue;">hello, world</p>                           |      | \
+       </body>                                                             |      |  {style}-'атрибутный узел'
+   </html>                                                                 |      |
+                                                                           |  (hello, world)-'текстовых узлах'
+                                                                           |  
+                                                                           |
+                                                                       (Greeting)-'текстовых узлах'
+       
+
+
+Все прямоугольники изображенные на картинке являются 'объектами (или узлами)". 
+
+ Узел Document. Любое обращение к DOM должно начинаться с обращения к данному узлу.
+
+ Для каждого HTML элемента на странице браузер создает соответствующий 'элементный узел'[].
+
+Содержимое элементов хранится в 'текстовых узлах'().
+
+Для каждого атрибута HTML элемента создается 'атрибутный узел'{}. 
+
+ 'Текст' всегда хранится в текстовых узлах, а не является свойством элемента.
+ Т.е. для того, чтобы обратиться к содержимому HTML элемента Вы должны обратиться к свойству его текстового узла.
+
+Узлы в объектной структуре связаны друг с другом. Существует несколько специальных терминов для описания отношений между узлами:
+
+'Родительский узел (parent node)' - родительским узлом по отношению к рассматриваемому объекту является узел, в который вложен рассматриваемый объект. На нашей схеме по отношению к узлам <h1> и <p> <body> является родительским. Для узла <title> родительским является узел <head>.
+
+'Узлы-потомки (child node)' - узлом-потомком по отношению к рассматриваемому объекту является узел, который вложен в рассматриваемый объект. На нашей схеме по отношению к узлу <body> <h1> и <p> являются потомками. Для узла <head> потомком является <title>.
+
+'Узлы-братья (sibling node)' - узлы находящиеся на одинаковом уровне вложенности по отношению к их родительскому узлу. На нашей схеме узлами-братьями являются <body> и <head>, <p> и <h1>.
+
+Самый верхний узел в DOM называется 'корневым'. На нашей схеме корневым является <html> (т.к. объект document не является частью DOM).
+
+<script type='text/javascript'>
+/* Прочитаем содержимое элемента p и выведем результат на страницу:
+1. Обратимся к первому элементу потомку body (h1).
+2. Перейдем к следующему узлу брату. (p) 
+3. Обратимся к текстовому узлу соответствующего элемента. 
+4. Обратимся к содержимому текстового узла. */
+           document.write(document.body.childNodes[1].nextSibling.childNodes[0].nodeValue);
+</script>
+
+Разберем процесс перемещения подробнее:
+
+Обращаемся к объекту document, в котором находится DOM. Код на данном шаге имеет вид: document.
+Обращаемся к корневому узлу (т.е. тэгу <html>) который находится внутри объекта document. Код на данном шаге имеет вид: document.documentElement.
+Обращаемся ко второму потомку (так как в коде страницы body располагается после head) корневого узла. Код на данном этапе будет иметь вид: document.documentElement.childNodes[1]. Вы также можете напрямую обратится к body используя следующий код (далее будем полагать что Вы выбрали этот вариант): document.body.
+Обращаемся ко второму потомку body (элемент p задан в коде после h1). Код на данном этапе будет иметь вид: document.body.childNodes[1].
+Обращаемся к текстовому узлу который является первым потомком p и узнаем значение его свойства. Код на данном этапе будет иметь вид: document.body.childNodes[1].childNodes[0].nodeValue.
+
+	<html>
+	<head>
+		<meta charset="utf-8">
+		<title>HTML DOM</title>
+	</head>
+	<body>                                                   document.body     
+		<h1>HTML DOM </h1> //childNodes[0]
+		<p>                                              document.body.childNodes[1]
+                  Привет всем.                                   document.body.childNodes[1].childNodes[0].nodeValue
+                </p>                           
+		<hr />
+		<b>
+			<script type='text/javascript'>
+	//Выведем содержимое абзаца на страницу
+	document.write(document.body.childNodes[1].childNodes[0].nodeValue);
+	</script>
+	</b>
+	</body>
+	</html>
+
+Прямое обращение к элементу
+
+С помощью метода getElementById Вы можете напрямую обращаться к элементам по их идентификатору (атрибут id), а с помощью свойства innerHTML можно быстро считывать их текстовое содержимое.
+
+	<html>
+	  <head>
+		<meta charset="utf-8">
+		<title>HTML DOM</title>
+	  </head>
+	  <body>
+		<p>Это обычный абзац.</p>
+		<p id='par'>Это абзац с id=par.</p>
+		<p>Это еще один обычный абзац.</p>
+		<hr />
+		<b>
+			<script type='text/javascript'>
+		      //Выведем содержимое второго абзаца на страницу
+		      document.write(document.getElementById('par').innerHTML);
+		        </script>
+	       </b>
+	  </body>
+	</html>
+
+DOM МАНИПУЛЯЦИИ
+
+Для каждого элемента на странице браузер создает в DOM элементный узел.
+
+Каждый элементный узел имеет набор предопределенных свойств и методов. С помощью этих свойств и методов Вы можете производить различные манипуляции над содержимым элементных узлов объектной структуры.
+
+СВОЙСТВА
+
+С помощью свойства innerHTML Вы можете получить доступ к содержимому текстового узла DOM объекта.
+
+<html>
+<head>
+	<script type='text/javascript'>
+		function change(){
+			document.getElementById('par').innerHTML='Я изучаю HTML DOM на <b>wisdomweb.ru</b>!';
+		}
+		function changeback(){
+			document.getElementById('par').innerHTML='Я изучаю JavaScript.';
+		}
+	</script>
+</head>
+<body>
+	<p id='par'> Я изучаю JavaScript.</p>
+	<input type='button' onclick='change()' value='Изменить текст абзаца'/>
+	<input type='button' onclick='changeback()' value='Вернуть первоначальный текст'/>
+</body>
+</html>
+
+С помощью свойства nodeName Вы можете узнать имя узла.
+
+<html>
+<body>
+	<p id='par'>Это абзац. </p>
+	<h3 id='header'>Это заголовок.</h3>
+	<hr />
+	<b>
+		<script type='text/javascript'>
+//Узнаем имя элемента с id=par и сохраним результат в переменную x
+x=document.getElementById('par').nodeName;
+//Выведем результат на страницу
+document.write(x+'<br />');
+//Узнаем имя элемента с id=header и сохраним результат в переменную y
+y=document.getElementById('header').nodeName;
+//Выведем результат на страницу
+document.write(y);
+</script>
+</b>
+</body>
+</html>
+
+
+С помощью свойства nodeValue Вы можете узнать значения узла.
+
+//Узнаем значение свойства первого потомка элемента с id=par и сохраним результат в x
+x=document.getElementById("par").childNodes[0].nodeValue;
+//Выведим результат на страницу
+document.write(x+"<br />");
+
+С помощью свойства parentNode Вы можете обратиться к родительскому узлу элемента.
+
+//Узнаем имя родительского узла элемента с id=par и сохраним результат в x
+x=document.getElementById("par").parentNode.nodeName;
+//Выведим результат на страницу
+document.write(x+"<br />");
+
+С помощью свойства childNodes Вы можете обратиться к узлам потомкам элемента.
+
+Для того, чтобы обратиться к первому узлу потомку используйте childNodes[0], ко второму childNodes[1] и т.д.
+
+//Узнаем свойство первого потомка элемента с id=par и запишем результат в x
+x=document.getElementById("par").childNodes[0].nodeValue;
+//Выведим результат на страницу
+document.write(x+"<br />");
+
+С помощью свойства attributes Вы можете обратиться к атрибутам узла.
+
+Нумерация атрибутов идет в обратном порядке.(???????) Для того, чтобы обратиться к последнему атрибуту используйте attributes[0], к предпоследнему attributes[1] и т.д. (???????)
+
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>HTML DOM</title>
+</head>
+<body>
+	<a id='ww' href='http://www.wisdomweb.ru'>wisdomweb.ru</a>
+	<hr />
+	<b>
+		<script type='text/javascript'>
+
+		//Узнаем значение последнего атрибута элемента и запишем результат в x
+		x=document.getElementById('ww').attributes[0].nodeValue;
+		//Узнаем значение предпоследнего атрибута элемента и запишем результат в y
+		y=document.getElementById('ww').attributes[1].nodeValue;
+		//Выведем значение переменных x и y на страницу
+		document.write(x+'<br />');
+		document.write(y+'<br />');
+
+	      </script>
+         </b>
+</body>
+</html>
+
+wisdomweb.ru
+________________________________
+ww
+http://www.wisdomweb.ru
+////////////////////////TODO
+СОЗДАНИЕ НЕОЧЕВИДНЫХ ПОТОМКОВ
+
+Если при разборе страницы браузер встречает символ без тэгов, он создает для него в DOM текстовый узел.
+
+При редактировании страницы новые тэги переносятся на новую строку, каждый такой перенос осуществляется с помощью символа перевода строки (нажатия клавиши enter). Так как символ перевода строки является символом без тэга, для него будет создан пустой текстовый узел.
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>HTML DOM</title>
+</head>
+
+<body>
+	<p>Попробуйте вывести данное содержимое на страницу с помощью скрипта.</p>
+	<br />
+	<hr />
+	<b>
+		<script type='text/javascript'>
+/* Итак мы хотим вывести содержимое тэга p на страницу, кажется что код написан верно, но на страницу 
+выведется undefined (неопределенно) */
+document.write(document.body.childNodes[0].innerHTML+'<br />');
+/* Дело в том, что тэг p идущий после body был перенесен на новую строку соответственно первый узел потомок 
+body это текстовый узел созданный для символа перевода строки, а элемент p является вторым потомком в этом мы можем
+убедится выведя имя первого элемента потомка body */
+document.write(document.body.childNodes[0].nodeName+'<br />');
+/* А так мы можем вывести содержимое тэга p на страницу и имя соответствующего узла */
+document.write(document.body.childNodes[1].innerHTML+'<br />');
+document.write(document.body.childNodes[1].nodeName);
+</script>
+</b>
+</body>
+</html>
+
+Попробуйте вывести данное содержимое на страницу с помощью скрипта.
+_______________________________________
+
+undefined
+#text
+Попробуйте вывести данное содержимое на страницу с помощью скрипта.
+P
+////////////////////////
+МЕТОДЫ HTML DOM
+С помощью метода getElementById() Вы можете обратиться к элементу с указанным id.
+
+С помощью метода getElementsByTagName() Вы можете обратиться ко всем элементам с указанным именем тэга.
+
+Метод возвращает массив элементов. Нумерация элементов в массиве начинается с 0.
+
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>HTML DOM</title>
+</head>
+
+
+<body>
+	<p>Это первый абзац на странице. </p>
+	<p> Это второй абзац на странице. </p>
+	<hr />
+	<script type='text/javascript'>
+
+	//Узнаем содержимое первого абзаца на странице и запишем результат в x
+	x=document.getElementsByTagName('p')[0].innerHTML;
+
+	//Выведим результат на страницу
+	document.write(x+'<br />');
+
+	//Узнаем содержимое второго абзаца и запишем результат в y
+	y=document.getElementsByTagName('p')[1].innerHTML;
+
+	//Выведим результат на страницу
+	document.write(y);
+
+	</script>
+
+						"Это первый абзац на странице."
+						<br>
+						"Это второй абзац на странице.
+
+
+
+						"
+</body>
+</html>
+
+Это первый абзац на странице.
+
+Это второй абзац на странице.
+______________________________________
+Это первый абзац на странице. 
+Это второй абзац на странице.
+..........................
+С помощью метода createElement() Вы можете создать элемент.
+
+С помощью метода appendChild() Вы можете вставить созданный элемент в произвольный узел.
+<script type='text/javascript'>
+var i=0;
+function elCreate(){
+   //Создадим новый абзац
+   var newpar = document.createElement('p');
+   i++;
+   //Запишем созданный абзац в body
+   document.body.appendChild(newpar).innerHTML='<b>Я созданный элемент номер '+i+'</b>.';
+}
+</script>
+</head>
+<body>
+<input type='button' value='Создать новый элемент' onclick='elCreate()'/>
+
+......................
+С помощью метода removeChild() Вы можете удалить узел потомок из элемента.
+
+Данный метод возвращает удаленный узел.
+<html>
+<head>
+	<meta charset="utf-8">
+	<script type='text/javascript'>
+		function mvParFrom(){
+			var rcont = document.getElementById('container');
+			var rpar= document.getElementById('par');
+   /* Удалим из элемента с id=container элемент с id=par и вернем 
+   удаленный элемент в rel */
+   var rel=rcont.removeChild(rpar);
+   //Выведем содержимое текстового узла удаленного элемента на страницу
+   document.getElementById('res').innerHTML=rel.innerHTML;
+}
+function mvParTo(){
+	document.getElementById('cont').style.display='none';
+	document.getElementById('container').appendChild(document.getElementById('res'));
+}
+</script>
+</head>
+<body>
+	<div id='container' style='border-style:solid;border-width:1px;
+	width:400px;height:50px;background-color:yellow;'>
+	<p id='par'>Это абзац вложенный в элемент контейнер.</p>
+</div>
+<div id='cont'>
+	<br />
+	<input type='button' value='Вынести элемент из контейнера' onclick='mvParFrom()' />
+	<input type='button' value='Вернуть элемент в контейнер' onclick='mvParTo()' />
+	<hr />
+	<p id='res'></p>
+</div>
+</body>
+</html>
+_______________________________________________
+ОБЪЕКТ STYLE
+
+
+////////////////////////////////////////
+
+              JS                                                                                 JQ
+Нахождение HTML Элементы
+	    
+
+	document.getElementById(id)	                                     $("#bar");
+	document.getElementsByTagName(name)	                             $("p");
+	document.getElementsByClassName(name)	                             $(".foo");
+
+пример
+var x = document.getElementById("main");
+var y = x.getElementsByTagName("p");
+_________________________________________________________
+Изменение HTML-элементов
+	                                                                                           Get Content - text(), html(), and val()
+                                                                                    text() - Sets or returns the text content of selected elements
+                                                                                    html() - Sets or returns the content of selected elements (including HTML markup)
+                                                                                    val() - Sets or returns the value of form fields
+
+	element.innerHTML =  new html content	                                     $("#test2").html("<b>Hello world!</b>");
+ Change the HTML content of a <p> element with id="demo":
+document.getElementById("demo").innerHTML = "Paragraph changed!";                    $("#test1").text("Hello world!");
+                                                                                     $("#test3").val("Dolly Duck");
+
+                                                                                     attr() method is also used to set/change attribute values.
+	element.attribute = new value	                                            $("#w3s").attr("href", "http://www.w3schools.com/jquery");
+	element.setAttribute(attribute, value)                                      $("img").attr("src", "img_pulpitrock.jpg");
+ document.getElementsByTagName("H1")[0].setAttribute("class", "democlass");           
+                                                                                     css() - Sets or returns the style attribute                      
+	element.style.property = new style	                                     $("p").css("background-color");
+   document.getElementById("p2").style.color = "blue";
+
+
+element.setAttribute("style", "background-color: red;");
+element.style.backgroundColor = "red";
+
+document.getElementsByTagName("INPUT")[0].setAttribute("type", "button");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
