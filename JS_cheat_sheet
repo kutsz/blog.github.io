@@ -10,6 +10,44 @@
 Оно имеет смысл «значение не присвоено».
 	var x;
 	alert( x ); // выведет "undefined"
+//////////
+In JavaScript, almost "everything" is an object.
+
+Booleans can be objects (or primitive data treated as objects)
+Numbers can be objects (or primitive data treated as objects)
+Strings can be objects (or primitive data treated as objects)
+Dates are always objects
+Maths are always objects
+Regular expressions are always objects
+Arrays are always objects
+Functions are always objects
+Objects are objects
+
+.......
+
+The syntax for accessing the property of an object is:
+
+objectName.property          // person.age
+or
+
+objectName["property"]       // person["age"]
+or
+
+objectName[expression]       // x = "age"; person[x]
+
+.............
+<script>
+var txt = "";
+var person = {fname:"John", lname:"Doe", age:25};
+var x;
+for (x in person) {
+    txt += person[x] + " ";
+}
+document.getElementById("demo").innerHTML = txt;
+</script>
+
+John Doe 25
+
 
 ////////////////////////////////////////////////////
 Наследование реализовано через механизм прототипов, свойства и методы могут быть добавлены в любой объект динамически.
@@ -752,7 +790,7 @@ luckyAnswer.get(); // "7!!"
 
 
 //////////////////////////
-Определение классовEDIT
+ОПРЕДЕЛЕНИЕ КЛАССОВ
 На самом деле классы — это функции. Поэтому так же, как вы определяете функции (function expressions и function declarations), вы можете определять и классы с помощью:
 
 class expressions
