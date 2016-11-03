@@ -268,6 +268,8 @@ echo "$a $hello";
 		echo " , $i в кубе = " . ($i*$i*$i) . "\n";
 	} 
 ...........................
+http://php.net/manual/ru/language.control-structures.php
+...................
 $t = date("H");
 
 if ($t < "10") {
