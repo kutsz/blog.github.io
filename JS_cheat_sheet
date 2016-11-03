@@ -13,42 +13,88 @@
 //////////
 In JavaScript, almost "everything" is an object.
 
-Booleans can be objects (or primitive data treated as objects)
-Numbers can be objects (or primitive data treated as objects)
-Strings can be objects (or primitive data treated as objects)
-Dates are always objects
-Maths are always objects
-Regular expressions are always objects
-Arrays are always objects
-Functions are always objects
-Objects are objects
+	Booleans can be objects (or primitive data treated as objects)
+	Numbers can be objects (or primitive data treated as objects)
+	Strings can be objects (or primitive data treated as objects)
+	Dates are always objects
+	Maths are always objects
+	Regular expressions are always objects
+	Arrays are always objects
+	Functions are always objects
+	Objects are objects
 
 .......
 
 The syntax for accessing the property of an object is:
 
-objectName.property          // person.age
-or
+	objectName.property          // person.age
 
-objectName["property"]       // person["age"]
-or
+	objectName["property"]       // person["age"]
 
-objectName[expression]       // x = "age"; person[x]
+	objectName[expression]       // x = "age"; person[x]
 
 .............
-<script>
-var txt = "";
-var person = {fname:"John", lname:"Doe", age:25};
-var x;
-for (x in person) {
-    txt += person[x] + " ";
-}
-document.getElementById("demo").innerHTML = txt;
-</script>
+	<script>
+		var txt = "";
+		var person = {fname:"John", lname:"Doe", age:25};
+		var x;
+
+		for (x in person) {
+		    txt += person[x] + " ";
+		}
+
+		document.getElementById("demo").innerHTML = txt;
+
+	</script>
 
 John Doe 25
+.......................................................
 
+<body>
 
+	<p>There are two different ways to access an object property:</p>
+	<p>You can use .property or ["property"].</p>
+
+	<p id="demo"></p>
+
+		<script>
+			var person = {
+			    firstname:"John",
+			    lastname:"Doe",
+			    age:50,
+			    eyecolor:"blue"
+			};
+
+			document.getElementById("demo").innerHTML =
+			person.firstname + " is " + person.age + " years old.";
+
+		</script>
+
+</body>
+
+...
+John is 50 years old.
+
+.........................................................
+
+'Adding New Properties'
+You can add new properties to an existing object by simply giving it a value.
+Assume that the person object already exists - you can then give it new properties:
+
+	person.nationality = "English";
+
+'Deleting Properties'
+The delete keyword deletes a property from an object:
+
+	var person = {firstName:"John", lastName:"Doe", age:50, eyeColor:"blue"};
+	delete person.age;   // or delete person["age"]
+..........................................................
+<p id="demo"></p>
+
+	<script>
+		var cars = ["Saab", "Volvo", "BMW"];
+		document.getElementById("demo").innerHTML = cars[0];
+	</script>
 ////////////////////////////////////////////////////
 Наследование реализовано через механизм прототипов, свойства и методы могут быть добавлены в любой объект динамически.
 /////////////////////////////////////
@@ -173,18 +219,10 @@ window we saw.
 # We’re using + to concatenate strings here, just like we used . in PHP (and
 again, MUCH easier here than in C!).
 
-# In
-between
-the
-string
-parts
-we
-can
-see,
-we
-have
-document.getElementById('name').value . Let’s break this down some
-more.
+# In between the string parts we can see, we have
+	document.getElementById('name').value . 
+Let’s break this down some more.
+
 • Remember our DOM tree above? document here refers to the root node of
 the tree, which is a special global variable in JavaScript.
 • We have a function called getElementById that lets us traverse the DOM
@@ -415,6 +453,7 @@ window.setInterval(blink, 500); // глобальная переменная win
 Объект String имеет методы и свойства:
 
 String Properties:
+
 	Property	                   Description
 
 	constructor	               Returns the string's constructor function
@@ -436,12 +475,14 @@ lastIndexOf()		Returns the position of the last found occurrence of a specified 
 localeCompare()		Compares two strings in the current locale
 match()	        	Searches a string for a match against a regular expression, and returns the matches
 repeat()		Returns a new string with a specified number of copies of an existing string
-replace()		Searches a string for a specified value, or a regular expression, and returns a new string where the specified values are replaced
+replace()		Searches a string for a specified value, or a regular expression, and returns a new string where the
+                        specified values are replaced
 search()		Searches a string for a specified value, or regular expression, and returns the position of the match
 slice()	        	Extracts a part of a string and returns a new string
 split()   		Splits a string into an array of substrings
 startsWith()		Checks whether a string begins with specified characters
-substr()		Extracts the characters from a string, beginning at a specified start position, and through the specified number of character
+substr()		Extracts the characters from a string, beginning at a specified start position, and through the
+                        specified number of character
 substring()		Extracts the characters from a string, between two specified indices
 toLocaleLowerCase()	Converts a string to lowercase letters, according to the host's locale
 toLocaleUpperCase()	Converts a string to uppercase letters, according to the host's locale
@@ -465,6 +506,147 @@ var str = "Please locate where 'locate' occurs!";
 var pos = str.indexOf("locate");
 
 ??????????????????????????????????????????????????????/
+Массив объектов                Arrays are Objects
+Объект Массив используется для хранения нескольких значений в одной переменной:
+
+var cars = ["Saab", "Volvo", "BMW"];
+
+Свойства массива:
+
+Property		Description
+
+constructor	Returns the function that created the Array object's prototype
+length		Sets or returns the number of elements in an array
+prototype	Allows you to add properties and methods to an Array object
+
+Методы массивов:
+
+Method			Description
+
+concat()	Joins two or more arrays, and returns a copy of the joined arrays
+copyWithin()	Copies array elements within the array, to and from specified positions
+every()		Checks if every element in an array pass a test
+fill()		Fill the elements in an array with a static value
+filter()	Creates a new array with every element in an array that pass a test
+find()		Returns the value of the first element in an array that pass a test
+findIndex()	Returns the index of the first element in an array that pass a test
+forEach()	Calls a function for each array element
+indexOf()	Search the array for an element and returns its position
+isArray()	Checks whether an object is an array
+join()		Joins all elements of an array into a string
+lastIndexOf()	Search the array for an element, starting at the end, and returns its position
+map()		Creates a new array with the result of calling a function for each array element
+pop()		Removes the last element of an array, and returns that element
+push()		Adds new elements to the end of an array, and returns the new length
+reduce()	Reduce the values of an array to a single value (going left-to-right)
+reduceRight()	Reduce the values of an array to a single value (going right-to-left)
+reverse()	Reverses the order of the elements in an array
+shift()		Removes the first element of an array, and returns that element
+slice()		Selects a part of an array, and returns the new array
+some()		Checks if any of the elements in an array pass a test
+sort()		Sorts the elements of an array
+splice()	Adds/Removes elements from an array
+toString()	Converts an array to a string, and returns the result
+unshift()	Adds new elements to the beginning of an array, and returns the new length
+valueOf()	Returns the primitive value of an array
+
+❮ ❯
+
+	<p id="demo"></p>
+
+	<script>
+	var fruits = ["Banana", "Orange", "Apple", "Mango"];
+	document.getElementById("demo").innerHTML = fruits.toString();
+	</script>
+..........
+var fruits = ["Banana", "Orange", "Apple", "Mango"];
+var x = fruits.pop();      // the value of x is "Mango"
+..............
+var fruits = ["Banana", "Orange", "Apple", "Mango"];
+fruits.push("Kiwi");       //  Adds a new element ("Kiwi") to fruits
+..............
+var fruits = ["Banana", "Orange", "Apple", "Mango"];
+delete fruits[0];           // Changes the first element in fruits to undefined
+>>>>>>>>>>>>>>> // TODO // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Array:
+	var person = ["John", "Doe", 46];
+The typeof operator in JavaScript returns "object" for arrays.
+Arrays use numbers to access its "elements". In this example, person[0] returns John.
+
+Object:
+	var person = {firstName:"John", lastName:"Doe", age:46};
+Objects use names to access its "members". In this example, person.firstName returns John.
+
+var fruits = ["Banana", "Orange", "Apple", "Mango"];
+fruits[fruits.length] = "Lemon";     // adds a new element (Lemon) to fruits
+
+	WARNING !
+Adding elements with high indexes can create undefined "holes" in an array:
+
+
+	    'Associative Arrays'
+	Many programming languages support arrays with named indexes.
+
+	Arrays with named indexes are called associative arrays (or hashes).
+
+	JavaScript does not support arrays with named indexes.
+
+	In JavaScript, arrays always use numbered indexes.
+  
+	var person = [];
+	person[0] = "John";
+	person[1] = "Doe";
+	person[2] = 46;
+	var x = person.length;         // person.length will return 3
+	var y = person[0];             // person[0] will return "John"
+
+	WARNING !!  //TODO
+If you use a named index, JavaScript will redefine the array to a standard object.
+After that, all array methods and properties will produce incorrect results.
+
+	var person = [];
+	person["firstName"] = "John";
+	person["lastName"] = "Doe";
+	person["age"] = 46;
+	var x = person.length;         // person.length will return 0
+	var y = person[0];             // person[0] will return undefined
+
+	'THE DIFFERENCE BETWEEN ARRAYS AND OBJECTS'
+In JavaScript, arrays use numbered indexes.  
+In JavaScript, objects use named indexes.
+
+Arrays are a special kind of objects, with numbered indexes.
+
+	'WHEN TO USE ARRAYS. WHEN TO USE OBJECTS.'
+JavaScript does not support associative arrays.
+You should use objects when you want the element names to be strings (text).
+You should use arrays when you want the element names to be numbers.
+
+	var points = new Array();         // Bad
+	var points = [];                  // Good 
+	var points = new Array(40, 100, 1, 5, 25, 10); // Bad
+	var points = [40, 100, 1, 5, 25, 10];          // Good
+
+The new keyword only complicates the code. It can also produce some unexpected results.
+
+'How to Recognize an Array'
+The problem is that the JavaScript operator typeof returns "object":
+
+var fruits = ["Banana", "Orange", "Apple", "Mango"];
+
+typeof fruits;             // returns object
+Solution 1:	Array.isArray(fruits);     // returns true
+Solution 2:	To solve this problem you can create your own isArray() function:
+
+		function isArray(x) {
+		    return x.constructor.toString().indexOf("Array") > -1;
+		}
+
+Solution 3:	The instanceof operator returns true if an object is created by a given constructor:
+
+	var fruits = ["Banana", "Orange", "Apple", "Mango"];
+	fruits instanceof Array     // returns true
+
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 https://www.youtube.com/watch?v=PMfcsYzj-9M&app=desktop
         // Primitive types
@@ -831,7 +1013,7 @@ var Polygon = class Polygon {
     this.width = width;
   }
 };
-Тело класса и метод определенияEDIT
+Тело класса и метод определения
 Тело класса — это часть кода, находящаяся в фигурных скобках ({ }). Здесь вы можете объявлять члены класса, такие как методы и конструкторы.
 
 Строгий режим
@@ -889,7 +1071,8 @@ const p1 = new Point(5, 5);
 const p2 = new Point(10, 10);
 
 console.log(Point.distance(p1, p2));
-Наследование классовEDIT
+
+Наследование классов
 Ключевое слово extends используется в объявлениях классов и выражениях классов для создания класса дочернего относительно другого класса.
 
 class Animal { 
